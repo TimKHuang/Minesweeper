@@ -27,13 +27,17 @@ class Point:
         """
         self.point_data = PointData(x, y)
 
-    def set_bomb_around(self, number):
+    def set_bomb(self, is_bomb, number=0):
         """
         set the number of bombs around the current point.
 
         Args:
+            is_bomb (bool): if this is a bomb
             number (int): number of bombs around
         """
+        if is_bomb:
+            self.point_data.is_bomb = True
+            return
         self.point_data.bomb_around = number
 
     def continue_game(self):
@@ -49,7 +53,25 @@ class Point:
         False if open should stop.
         """
         self.point_data.is_opened = True
+        self.point_data.is_flagged = None
         return self.point_data.bomb_around == 0
+
+    def flag(self):
+        """ Flag the point"""
+        if self.point_data.is_opened:
+            return
+        self.point_data.is_flagged = True
+
+    def output(self):
+        """
+        Generate an output that can be passed to the user
+
+        Returns:
+            output (PointData): The processed data of the pointData
+        """
+        output = self.point_data.clone()
+        output.hide()
+        return output
 
     def __str__(self):
         """ be able to print the point info. """
@@ -66,7 +88,7 @@ class PointData:
         is_bomb (bool): whether the point is a bomb
         is_opened (bool): whether the point has been opened
         is_flagged (bool): whether the user has flagged the point
-        bomb_around (int): number of bombs around
+        bomb_around (int): number of bombs around.
     """
 
     def __init__(self, x, y):
@@ -114,13 +136,34 @@ class PointData:
 
     def __str__(self):
         """ be able to print the point info. """
-        return "Coordinate: ({}, {})" \
-               "is_bomb: {}" \
-               "is_opened: {}" \
-               "is_flagged: {}" \
-               "bomb_around: {}" \
+        return "Coordinate: ({}, {})\n" \
+               "is_bomb: {}\n" \
+               "is_opened: {}\n" \
+               "is_flagged: {}\n" \
+               "bomb_around: {}\n" \
             .format(self.x, self.y,
                     self.is_bomb,
                     self.is_opened,
                     self.is_flagged,
                     self.bomb_around)
+
+
+# Section below is for test use
+
+def test():
+    point1 = Point(1, 2)
+    point1.set_bomb(is_bomb=False, number=2)
+    # Basic Point
+    print("The point itself:")
+    print(point1)
+    # Output Point
+    print("The output point:")
+    print(point1.output())
+    # Opened Point
+    point1.open()
+    print("Opened Output:")
+    print(point1.output())
+
+
+if __name__ == '__main__':
+    test()
