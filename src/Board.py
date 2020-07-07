@@ -28,8 +28,7 @@ class Board:
         if height is None:
             height = width
         if mine_count > height * width:
-            print('More mines than the max size of the board')
-            sys.exit()
+            raise Exception('The board is too small to hold those mines.')
         self.height = height
         self.width = width
         self.mine_count = mine_count
@@ -68,7 +67,30 @@ class Board:
                     self.chessboard[x][y].set_bomb(False, mine)
         self.mine_count = mines
 
-    # Auxilary functions
+    def update(self, x, y, flag=False):
+        """
+        This function is used to update a board after user selects a box
+        Args:
+            x (int): This is the x-value of the box
+            y (int): This is the y-value of the box
+        Returns:
+            void
+        """
+        output_board = None
+        # When GameOver, player can see the real board
+        if self.isGameOver(x, y):
+            print("Game Over! Try again!")
+            output_board = [[self.chessboard[x][y] for x in range(self.height)]for y in range(self.width)]
+        elif flag:
+            self.chessboard[x][y].point_data.is_flagged = True
+        else:
+            if self.chessboard[x][y].point_data.bomb_around != 0:
+                self.chessboard[x][y].point_data.is_opened = True
+                output_board = [[self.chessboard[x][y] for x in range(self.height)]for y in range(self.width)]
+
+
+
+    # Auxiliary functions
     def check(self, x, y):
         """
         This function is used to number each boxes in the mine board.
@@ -81,105 +103,188 @@ class Board:
             mine (int): This returns the value of the box.
         """
         mine = 0
-        if self.chessboard[x][y] == -1:
+        if self.chessboard[x][y].point_data.is_bomb:
             mine = -1
-        elif x == 0 and y == 0 and self.chessboard[x][y] != -1:
-            if self.chessboard[x + 1][y] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y + 1] == -1:
-                mine += 1
-            if self.chessboard[x][y + 1] == -1:
-                mine += 1
-        elif x == self.height - 1 and y == self.width - 1 and self.chessboard[x][y] != -1:
-            if self.chessboard[x - 1][y] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x][y - 1] == -1:
-                mine += 1
-        elif x == 0 and self.chessboard[x][y] != -1:
-            if self.chessboard[x][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y] == -1:
-                mine += 1
-            if y < self.width - 1:
-                if self.chessboard[x + 1][y + 1] == -1:
-                    mine += 1
-                if self.chessboard[x][y + 1] == -1:
-                    mine += 1
-        elif y == 0 and self.chessboard[x][y] != -1:
-            if self.chessboard[x - 1][y] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y + 1] == -1:
-                mine += 1
-            if self.chessboard[x][y + 1] == -1:
-                mine += 1
-            if x < self.height - 1:
-                if self.chessboard[x + 1][y + 1] == -1:
-                    mine += 1
-                if self.chessboard[x + 1][y] == -1:
-                    mine += 1
-        elif x == self.height - 1 and self.chessboard[x][y] != -1:
-            if self.chessboard[x][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y + 1] == -1:
-                mine += 1
-            if self.chessboard[x][y + 1] == -1:
-                mine += 1
-        elif y == self.width - 1 and self.chessboard[x][y] != -1:
-            if self.chessboard[x - 1][y] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y] == -1:
-                mine += 1
-        elif self.chessboard[x][y] != -1:
-            if self.chessboard[x - 1][y] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y - 1] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y] == -1:
-                mine += 1
-            if self.chessboard[x + 1][y + 1] == -1:
-                mine += 1
-            if self.chessboard[x][y + 1] == -1:
-                mine += 1
-            if self.chessboard[x - 1][y + 1] == -1:
-                mine += 1
+        # elif x == 0 and y == 0 and self.chessboard[x][y] != -1:
+        #     if self.chessboard[x + 1][y] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y + 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x][y + 1] == -1:
+        #         mine += 1
+        # elif x == self.height - 1 and y == self.width - 1 and self.chessboard[x][y] != -1:
+        #     if self.chessboard[x - 1][y] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x][y - 1] == -1:
+        #         mine += 1
+        # elif x == 0 and self.chessboard[x][y] != -1:
+        #     if self.chessboard[x][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y] == -1:
+        #         mine += 1
+        #     if y < self.width - 1:
+        #         if self.chessboard[x + 1][y + 1] == -1:
+        #             mine += 1
+        #         if self.chessboard[x][y + 1] == -1:
+        #             mine += 1
+        # elif y == 0 and self.chessboard[x][y] != -1:
+        #     if self.chessboard[x - 1][y] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y + 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x][y + 1] == -1:
+        #         mine += 1
+        #     if x < self.height - 1:
+        #         if self.chessboard[x + 1][y + 1] == -1:
+        #             mine += 1
+        #         if self.chessboard[x + 1][y] == -1:
+        #             mine += 1
+        # elif x == self.height - 1 and self.chessboard[x][y] != -1:
+        #     if self.chessboard[x][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y + 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x][y + 1] == -1:
+        #         mine += 1
+        # elif y == self.width - 1 and self.chessboard[x][y] != -1:
+        #     if self.chessboard[x - 1][y] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y] == -1:
+        #         mine += 1
+        # elif self.chessboard[x][y] != -1:
+        #     if self.chessboard[x - 1][y] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y - 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y] == -1:
+        #         mine += 1
+        #     if self.chessboard[x + 1][y + 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x][y + 1] == -1:
+        #         mine += 1
+        #     if self.chessboard[x - 1][y + 1] == -1:
+        #         mine += 1
+        elif not self.chessboard[x][y].point_data.is_bomb:
+            res = self.surround(x, y)
+            for ele in res:
+                if self.chessboard[ele[0]][ele[1]].point_data.is_bomb:
+                    mine +=1
         return mine
 
-    def update(self, x, y):
+    def checkZero(self, x, y):
         """
-        This function is used to update and return an updated board
-        after user selects a box
+        This function finds out coordinates of boxes having value 0
+        that are next to each other.
+        Box (x, y) must have value 0
+        Args:
+            x (int): This is the x-value of the box
+            y (int): This is the y-value of the box
+        Returns:
+            s (set((int,int))): This contains boxes' coordinates needed to be open
+        """
+        s = set([])
+        res = self.surround(x, y)
+        s.update(res) #all ele in res needs to be opened
+        temp = self.hasZero(res)
+        while len(temp) > 0:
+            for ele in temp:
+                t = self.surround(ele[0], ele[1]) #it is a set contains coordinates of boxes around box ele
+                s.update(t) #all ele in t needs to be opened
+                self.checkZero(ele[0], ele[1])
+
+
+
+    def hasZero(self, s):
+        """
+        This function checks if boxes in a set has value 0 or not
+        Args:
+            s (set((int, int))): This is a set contains boxes' coordinates
+
+        Returns:
+            zero (set((int,int))): This contains the coordinates of boxes
+            having value 0 in set s
+        """
+        zero = set([])
+        for ele in s:
+            if self.chessboard[ele[0]][ele[1]].point_data.bomb_around == 0:
+                zero.add(ele)
+        return zero
+
+
+    def surround(self, x, y):
+        """
+        This function is used to visit boxes around (x, y)
+        It would return a set of boxes' coordinates
         Args:
             x (int): This is the x-value of the box
             y (int): This is the y-value of the box
 
         Returns:
-
+            res(set((int,int))): This is a set of coordinates of all nearby boxes
         """
-        # When GameOver, player can see the real board
-        if self.isGameOver(x, y):
-            print("Game Over! Try again!")
+        res = set([])
+        if x == 0 and y == 0:
+            res.add((x+1, y))
+            res.add((x+1, y+1))
+            res.add((x, y+1))
+        elif x == self.height - 1 and y == self.width - 1:
+            res.add((x-1, y))
+            res.add((x-1, y-1))
+            res.add((x, y-1))
+        elif x == 0:
+            res.add((x, y-1))
+            res.add((x+1, y-1))
+            res.add((x+1, y))
+            if y < self.width -1:
+                res.add((x+1, y+1))
+                res.add((x, y+1))
+        elif y == 0:
+            res.add((x-1, y))
+            res.add((x-1, y+1))
+            res.add((x, y+1))
+            if x < self.height - 1:
+                res.add((x+1, y+1))
+                res.add((x+1, y))
+        elif x == self.height -1:
+            res.add((x, y-1))
+            res.add((x-1, y-1))
+            res.add((x-1, y))
+            res.add((x-1, y+1))
+            res.add((x, y+1))
+        elif y == self.width - 1:
+            res.add((x-1, y))
+            res.add((x-1, y-1))
+            res.add((x, y-1))
+            res.add((x+1, y-1))
+            res.add((x+1, y))
         else:
-            if self.chessboard[x][y] != 0:
-
-
+            res.add((x-1, y))
+            res.add((x-1, y-1))
+            res.add((x, y-1))
+            res.add((x+1, y-1))
+            res.add((x+1, y))
+            res.add((x+1, y+1))
+            res.add((x, y+1))
+            res.add((x-1, y+1))
+        return res
 
     def isGameOver(self, x, y):
         """
@@ -189,10 +294,10 @@ class Board:
             y (int): This is the y-value of the selected box
 
         Returns:
-
+            GameOver (boolean): This value determines if the game is over
         """
         GameOver = False
-        if self.chessboard[x][y] == -1:
+        if self.chessboard[x][y].point_data.is_bomb:
             GameOver = True
         return GameOver
 
