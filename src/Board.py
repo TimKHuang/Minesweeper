@@ -1,3 +1,4 @@
+# coding=gbk
 # -*- coding:utf-8 -*-
 """
 @author: Victor
@@ -11,19 +12,19 @@ import sys
 import random
 import time
 
+from .Point import Point
+
 
 class Board:
 
     def __init__(self, mine_count=25, width=16, height=None):
         """
         This function is used to generate a mine board. Default size is 16*16
-
         Args:
             mine_count (int): This determines the total number of mines in a board
             width (int): This determines the width of the board
             height (int): This determines the height of the board
         """
-
         if height is None:
             height = width
         if mine_count > height * width:
@@ -32,20 +33,21 @@ class Board:
         self.height = height
         self.width = width
         self.mine_count = mine_count
-        self.chessboard = [[0 for x in range(height)] for y in range(width)]
+        self.chessboard = [[Point(x,y) for x in range(height)] for y in range(width)]
         self.mines = [0 for z in range(mine_count)]
         self.initialise()
 
     def initialise(self):
         """
-        This function is used to initialise the board
+        This function is used to initialise the board:
+            Randomly allocate bomb in the board
+            Number each boxes
         Returns:
             void
         """
-
         random.seed(time.time())  # set seed, to generate distinct random number
         size = self.height * self.width - 1
-        for i in range(self.minecount):
+        for i in range(self.mine_count):
             randnum = int(random.random() * size + 1)
             if self.mines[:i].__contains__(randnum):
                 randnum = int(random.random() * size + 1)
@@ -54,14 +56,16 @@ class Board:
         for r in self.mines:
             x = r // self.width
             y = r % self.height
-            self.chessboard[x][y] = -1
+            self.chessboard[x][y].set_bomb(True)
         mines = 0
         for x in range(self.height):
             for y in range(self.width):
                 mine = self.check(x, y)
                 if mine == -1:
                     mines += 1
-                self.chessboard[x][y] = mine
+                    self.chessboard[x][y].set_bomb(True)
+                else:
+                    self.chessboard[x][y].set_bomb(False, mine)
         self.mine_count = mines
 
     # Auxilary functions
@@ -76,7 +80,6 @@ class Board:
         Returns:
             mine (int): This returns the value of the box.
         """
-
         mine = 0
         if self.chessboard[x][y] == -1:
             mine = -1
@@ -170,7 +173,6 @@ class Board:
         Returns:
 
         """
-
         # When GameOver, player can see the real board
         if self.isGameOver(x, y):
             print("Game Over! Try again!")
@@ -189,14 +191,12 @@ class Board:
         Returns:
 
         """
-
         GameOver = False
         if self.chessboard[x][y] == -1:
             GameOver = True
         return GameOver
 
-    def runGame(self):
-        
+
 
 
 
