@@ -6,17 +6,17 @@
 @software: PyCharm
 @file: GenerateBoard.py
 @time: 04/07/2020 18:03
-@description: This file is used to generate a mineboard
+@description: This file is used to generate a mine board
 """
 import sys
 import random
 import time
 
 from .Point import Point
+from .exceptions import TooManyMineException
 
 
 class Board:
-
     def __init__(self, mine_count=25, width=16, height=None):
         """
         This function is used to generate a mine board. Default size is 16*16
@@ -28,11 +28,11 @@ class Board:
         if height is None:
             height = width
         if mine_count > height * width:
-            raise Exception('The board is too small to hold those mines.')
+            raise TooManyMineException
         self.height = height
         self.width = width
         self.mine_count = mine_count
-        self.chessboard = [[Point(x,y) for x in range(height)] for y in range(width)]
+        self.chessboard = [[Point(x, y) for x in range(height)] for y in range(width)]
         self.mines = [0 for z in range(mine_count)]
         self.initialise()
 
@@ -62,7 +62,7 @@ class Board:
                 mine = self.check(x, y)
                 if mine == -1:
                     mines += 1
-                    self.chessboard[x][y].set_bomb(True)
+                    # self.chessboard[x][y].set_bomb(True)
                 else:
                     self.chessboard[x][y].set_bomb(False, mine)
         self.mine_count = mines
@@ -71,24 +71,36 @@ class Board:
         """
         This function is used to update a board after user selects a box
         Args:
+            flag (boolean): This value determines if user flags a box
             x (int): This is the x-value of the box
             y (int): This is the y-value of the box
         Returns:
             void
         """
         output_board = None
-        # When GameOver, player can see the real board
+        """
+        When GameOver, player can see the real board
+        Player can flag any boxes
+        Updating the board
+        """
         if self.isGameOver(x, y):
             print("Game Over! Try again!")
-            output_board = [[self.chessboard[x][y] for x in range(self.height)]for y in range(self.width)]
+            for row in self.chessboard:
+                for val in row:
+                    val.point_data.is_opened = True
+            output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
         elif flag:
             self.chessboard[x][y].point_data.is_flagged = True
+            output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
         else:
             if self.chessboard[x][y].point_data.bomb_around != 0:
                 self.chessboard[x][y].point_data.is_opened = True
-                output_board = [[self.chessboard[x][y] for x in range(self.height)]for y in range(self.width)]
-
-
+                output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
+            else:
+                res = self.checkZero(x, y)
+                for ele in res:
+                    self.chessboard[ele[0]][ele[1]].point_data.is_opened = True
+                output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
 
     # Auxiliary functions
     def check(self, x, y):
@@ -186,7 +198,7 @@ class Board:
             res = self.surround(x, y)
             for ele in res:
                 if self.chessboard[ele[0]][ele[1]].point_data.is_bomb:
-                    mine +=1
+                    mine += 1
         return mine
 
     def checkZero(self, x, y):
@@ -202,19 +214,20 @@ class Board:
         """
         s = set([])
         res = self.surround(x, y)
-        s.update(res) #all ele in res needs to be opened
+        s.update(res)  # all ele in res needs to be opened
         temp = self.hasZero(res)
         while len(temp) > 0:
             for ele in temp:
-                t = self.surround(ele[0], ele[1]) #it is a set contains coordinates of boxes around box ele
-                s.update(t) #all ele in t needs to be opened
-                self.checkZero(ele[0], ele[1])
-
-
+                t = self.surround(ele[0], ele[1])  # it is a set contains coordinates of boxes around box ele
+                s.update(t)  # all ele in t needs to be opened
+                z = self.checkZero(ele[0], ele[1])
+                s.update(z)
+        return s
 
     def hasZero(self, s):
         """
         This function checks if boxes in a set has value 0 or not
+        If so, the coordinates of the box will be returned
         Args:
             s (set((int, int))): This is a set contains boxes' coordinates
 
@@ -227,7 +240,6 @@ class Board:
             if self.chessboard[ele[0]][ele[1]].point_data.bomb_around == 0:
                 zero.add(ele)
         return zero
-
 
     def surround(self, x, y):
         """
@@ -242,48 +254,48 @@ class Board:
         """
         res = set([])
         if x == 0 and y == 0:
-            res.add((x+1, y))
-            res.add((x+1, y+1))
-            res.add((x, y+1))
+            res.add((x + 1, y))
+            res.add((x + 1, y + 1))
+            res.add((x, y + 1))
         elif x == self.height - 1 and y == self.width - 1:
-            res.add((x-1, y))
-            res.add((x-1, y-1))
-            res.add((x, y-1))
+            res.add((x - 1, y))
+            res.add((x - 1, y - 1))
+            res.add((x, y - 1))
         elif x == 0:
-            res.add((x, y-1))
-            res.add((x+1, y-1))
-            res.add((x+1, y))
-            if y < self.width -1:
-                res.add((x+1, y+1))
-                res.add((x, y+1))
+            res.add((x, y - 1))
+            res.add((x + 1, y - 1))
+            res.add((x + 1, y))
+            if y < self.width - 1:
+                res.add((x + 1, y + 1))
+                res.add((x, y + 1))
         elif y == 0:
-            res.add((x-1, y))
-            res.add((x-1, y+1))
-            res.add((x, y+1))
+            res.add((x - 1, y))
+            res.add((x - 1, y + 1))
+            res.add((x, y + 1))
             if x < self.height - 1:
-                res.add((x+1, y+1))
-                res.add((x+1, y))
-        elif x == self.height -1:
-            res.add((x, y-1))
-            res.add((x-1, y-1))
-            res.add((x-1, y))
-            res.add((x-1, y+1))
-            res.add((x, y+1))
+                res.add((x + 1, y + 1))
+                res.add((x + 1, y))
+        elif x == self.height - 1:
+            res.add((x, y - 1))
+            res.add((x - 1, y - 1))
+            res.add((x - 1, y))
+            res.add((x - 1, y + 1))
+            res.add((x, y + 1))
         elif y == self.width - 1:
-            res.add((x-1, y))
-            res.add((x-1, y-1))
-            res.add((x, y-1))
-            res.add((x+1, y-1))
-            res.add((x+1, y))
+            res.add((x - 1, y))
+            res.add((x - 1, y - 1))
+            res.add((x, y - 1))
+            res.add((x + 1, y - 1))
+            res.add((x + 1, y))
         else:
-            res.add((x-1, y))
-            res.add((x-1, y-1))
-            res.add((x, y-1))
-            res.add((x+1, y-1))
-            res.add((x+1, y))
-            res.add((x+1, y+1))
-            res.add((x, y+1))
-            res.add((x-1, y+1))
+            res.add((x - 1, y))
+            res.add((x - 1, y - 1))
+            res.add((x, y - 1))
+            res.add((x + 1, y - 1))
+            res.add((x + 1, y))
+            res.add((x + 1, y + 1))
+            res.add((x, y + 1))
+            res.add((x - 1, y + 1))
         return res
 
     def isGameOver(self, x, y):
@@ -300,12 +312,6 @@ class Board:
         if self.chessboard[x][y].point_data.is_bomb:
             GameOver = True
         return GameOver
-
-
-
-
-
-
 
 # mineboard = Mineboard(40,16)
 # for row in mineboard.chessboard:
