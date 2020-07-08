@@ -8,7 +8,6 @@
 @description: Provides a terminal view showing the board with characters.
 """
 
-
 from .View import View
 
 
@@ -71,17 +70,16 @@ class TerminalView(View):
         """
         result = {}
         # Get operation.
-        while True:
-            user_type = input("Flag a point or Open a point?\n"
-                              "y for yes and n for no:")
-            if user_type == "y":
-                result["flag"] = True
-                break
-            if user_type == "n":
-                result["flag"] = False
-                break
-            print("Please only type y or n!")
+        operation = self._input_check({"y", "n"}, "Flag a point? Please type y or n: \t")
+        result["flag"] = operation == 'y'
         # Get x
+        x = self._input_check(self._generate_string_collection(self.cols), "Type the x coordinate: \t")
+        result["x"] = x
+        # Get y
+        y = self._input_check(self._generate_string_collection(self.rows), "Type the y coordinate: \t")
+        result["y"] = y
+
+        return result
 
     def _input_check(self, checklist, message):
         """
