@@ -40,12 +40,11 @@ class Point:
             return
         self.point_data.bomb_around = number
 
-    def continue_game(self):
+    def is_bomb(self):
         """
-        True if the game continues.
-        False if meet a bomb and game over.
+        True if it is a bomb.
         """
-        return not self.point_data.is_bomb
+        return self.point_data.is_bomb
 
     def open(self):
         """
