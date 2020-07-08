@@ -54,20 +54,16 @@ class Board:
         for r in self.mines:
             x = r // self.width
             y = r % self.height
-            # print("bomb", (x, y))
             self.chessboard[x][y].set_bomb(True)
-        mines = 0
         for x in range(self.height):
             for y in range(self.width):
                 mine = self.check(x, y)
                 if mine == -1:
-                    mines += 1
-                    # self.chessboard[x][y].set_bomb(True)
+                    pass
                 else:
                     self.chessboard[x][y].set_bomb(False, mine)
-        self.mine_count = mines
-        output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
-        return output_board
+        # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
+        # return output_board
 
     def update(self, x, y, flag=False):
         """
@@ -88,23 +84,20 @@ class Board:
             print("Game Over! Try again!")
             for row in self.chessboard:
                 for val in row:
-                    val.point_data.is_opened = True
+                    val.open()
             # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
             # output_board = self.chessboard
         elif flag:
-            self.chessboard[x][y].point_data.is_flagged = True
+            self.chessboard[x][y].flag()
             # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
             # output_board = self.chessboard
         else:
-            if self.chessboard[x][y].point_data.bomb_around != 0:
-                self.chessboard[x][y].point_data.is_opened = True
+            if not self.chessboard[x][y].open():
+                pass
                 # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
                 # output_board = self.chessboard
             else:
                 self.checkZero(x, y)
-                # res = self.checkZero(x, y)
-                # for ele in res:
-                #     self.chessboard[ele[0]][ele[1]].point_data.is_opened = True
                 # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
                 # output_board = self.chessboard
         # return output_board
@@ -127,45 +120,27 @@ class Board:
         elif not self.chessboard[x][y].point_data.is_bomb:
             res = self.surround(x, y)
             for ele in res:
-                # print ((ele[0],ele[1]))
-                if self.chessboard[ele[0]][ele[1]].point_data.is_bomb:
+                if self.chessboard[ele[0]][ele[1]].is_bomb():
                     mine += 1
         return mine
 
     def checkZero(self, x, y):
         """
-        This function finds out coordinates of boxes having value 0
-        that are next to each other.
-        Box (x, y) must have value 0
+        This function is used to update the board when a 0-value
+        point is opened
         Args:
             x (int): This is the x-value of the box
             y (int): This is the y-value of the box
         Returns:
-            s (set((int,int))): This contains boxes' coordinates needed to be open
+            void
         """
         self.chessboard[x][y].point_data.is_opened = True
         for p in self.surround(x, y):
-            point = self.chessboard[p[0]][p[1]].point_data
-            if not point.is_bomb and point.bomb_around != 0:
-                point.is_opened = True
-            elif point.bomb_around == 0 and not point.is_opened:
-                point.is_opened = True
-                self.checkZero(point.x, point.y)
-    #
-    # def hasZero(self, s):
-    #     """
-    #     This function checks if boxes in a set has value 0 or not
-    #     If so, the coordinates of the box will be returned
-    #     Args:
-    #         s (set((int, int))): This is a set contains boxes' coordinates
-    #     Returns:
-    #         True or False: This contains the coordinates of boxes
-    #         having value 0 in set s
-    #     """
-    #     for ele in s:
-    #         if self.chessboard[ele[0]][ele[1]].point_data.bomb_around == 0 and not self.chessboard[ele[0]][ele[1]].point_data.is_opened:
-    #             return True
-    #     return False
+            point = self.chessboard[p[0]][p[1]]
+            if point.is_bomb():
+                continue
+            if point.open():
+                self.checkZero(point.point_data.x, point.point_data.y)
 
     def surround(self, x, y):
         """
@@ -195,7 +170,6 @@ class Board:
             if y - 1 >= 0:
                 res.add((x - 1, y - 1))
                 res.add((x, y - 1))
-        # print("visit",(x,y))
         return res
 
     def isGameOver(self, x, y):
@@ -206,12 +180,10 @@ class Board:
             y (int): This is the y-value of the selected box
 
         Returns:
-            GameOver (boolean): This value determines if the game is over
+            True, if it is a bomb
+            False, otherwise
         """
-        GameOver = False
-        if self.chessboard[x][y].point_data.is_bomb:
-            GameOver = True
-        return GameOver
+        return self.chessboard[x][y].is_bomb()
 
 
 def test():
@@ -222,7 +194,6 @@ def test():
                 val.point_data.bomb_around = '*'
             print(val.point_data.bomb_around, end=' ')
         print()
-    # print (mineboard.mine_count)
     mineboard.update(5, 5)
     for row in mineboard.chessboard:
         for val in row:
