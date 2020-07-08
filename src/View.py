@@ -46,7 +46,7 @@ class View(ABC):
             board (matrix of PointData): The processed board with key info hidden
 
         Returns:
-            input (tuple of int): The coordinate of the user input.
+            result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
         self.draw(board)
         return self.input()
