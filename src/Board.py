@@ -143,33 +143,29 @@ class Board:
         Returns:
             s (set((int,int))): This contains boxes' coordinates needed to be open
         """
-        # s = set([])
         self.chessboard[x][y].point_data.is_opened = True
-        res = self.surround(x, y)
-        while self.hasZero(res):
-            for ele in res:
-                point = self.chessboard[ele[0]][ele[1]]
-                if point.point_data.bomb_around == 0 and not point.point_data.is_opened:
-                    point.point_data.is_opened = True
-                    # s.add((point.point_data.x, point.point_data.y))
-                    self.checkZero(point.point_data.x, point.point_data.y)
-                else:
-                    point.point_data.is_opened = True
-
-    def hasZero(self, s):
-        """
-        This function checks if boxes in a set has value 0 or not
-        If so, the coordinates of the box will be returned
-        Args:
-            s (set((int, int))): This is a set contains boxes' coordinates
-        Returns:
-            True or False: This contains the coordinates of boxes
-            having value 0 in set s
-        """
-        for ele in s:
-            if self.chessboard[ele[0]][ele[1]].point_data.bomb_around == 0:
-                return True
-        return False
+        for p in self.surround(x, y):
+            point = self.chessboard[p[0]][p[1]].point_data
+            if not point.is_bomb and point.bomb_around != 0:
+                point.is_opened = True
+            elif point.bomb_around == 0 and not point.is_opened:
+                point.is_opened = True
+                self.checkZero(point.x, point.y)
+    #
+    # def hasZero(self, s):
+    #     """
+    #     This function checks if boxes in a set has value 0 or not
+    #     If so, the coordinates of the box will be returned
+    #     Args:
+    #         s (set((int, int))): This is a set contains boxes' coordinates
+    #     Returns:
+    #         True or False: This contains the coordinates of boxes
+    #         having value 0 in set s
+    #     """
+    #     for ele in s:
+    #         if self.chessboard[ele[0]][ele[1]].point_data.bomb_around == 0 and not self.chessboard[ele[0]][ele[1]].point_data.is_opened:
+    #             return True
+    #     return False
 
     def surround(self, x, y):
         """
@@ -230,7 +226,7 @@ def test():
     mineboard.update(5, 5)
     for row in mineboard.chessboard:
         for val in row:
-            print(val.point_data.is_opened, end="")
+            print(val.point_data.is_opened, end=" ")
         print()
 
 if __name__ == '__main__':
