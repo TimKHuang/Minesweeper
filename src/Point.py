@@ -51,6 +51,8 @@ class Point:
         True if other points should be opened as well.
         False if open should stop.
         """
+        if self.point_data.is_opened:
+            return False
         self.point_data.is_opened = True
         self.point_data.is_flagged = None
         return self.point_data.bomb_around == 0
