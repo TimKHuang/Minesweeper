@@ -1,7 +1,7 @@
 # coding=gbk
 # -*- coding:utf-8 -*-
 """
-@author: Victor
+@author: victorvv
 @contact: wengvictor5@gmail.com
 @software: PyCharm
 @file: GenerateBoard.py
@@ -12,8 +12,8 @@ import sys
 import random
 import time
 
-from .Point import Point
-from .exceptions import TooManyMineException
+from src.Point import Point
+from src.exceptions import TooManyMineException
 
 
 class Board:
@@ -32,7 +32,7 @@ class Board:
         self.height = height
         self.width = width
         self.mine_count = mine_count
-        self.chessboard = [[Point(x, y) for x in range(height)] for y in range(width)]
+        self.chessboard = [[Point(x, y) for y in range(width)] for x in range(height)]
         self.mines = [0 for z in range(mine_count)]
         self.initialise()
 
@@ -48,13 +48,14 @@ class Board:
         size = self.height * self.width - 1
         for i in range(self.mine_count):
             randnum = int(random.random() * size + 1)
-            if self.mines[:i].__contains__(randnum):
+            while randnum in self.mines:
                 randnum = int(random.random() * size + 1)
             self.mines[i] = randnum
             del randnum
         for r in self.mines:
             x = r // self.width
             y = r % self.height
+            print ("bomb", (x,y))
             self.chessboard[x][y].set_bomb(True)
         mines = 0
         for x in range(self.height):
@@ -66,6 +67,8 @@ class Board:
                 else:
                     self.chessboard[x][y].set_bomb(False, mine)
         self.mine_count = mines
+        output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
+        return output_board
 
     def update(self, x, y, flag=False):
         """
@@ -101,6 +104,7 @@ class Board:
                 for ele in res:
                     self.chessboard[ele[0]][ele[1]].point_data.is_opened = True
                 output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
+        return output_board
 
     # Auxiliary functions
     def check(self, x, y):
@@ -117,86 +121,10 @@ class Board:
         mine = 0
         if self.chessboard[x][y].point_data.is_bomb:
             mine = -1
-        # elif x == 0 and y == 0 and self.chessboard[x][y] != -1:
-        #     if self.chessboard[x + 1][y] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y + 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x][y + 1] == -1:
-        #         mine += 1
-        # elif x == self.height - 1 and y == self.width - 1 and self.chessboard[x][y] != -1:
-        #     if self.chessboard[x - 1][y] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x][y - 1] == -1:
-        #         mine += 1
-        # elif x == 0 and self.chessboard[x][y] != -1:
-        #     if self.chessboard[x][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y] == -1:
-        #         mine += 1
-        #     if y < self.width - 1:
-        #         if self.chessboard[x + 1][y + 1] == -1:
-        #             mine += 1
-        #         if self.chessboard[x][y + 1] == -1:
-        #             mine += 1
-        # elif y == 0 and self.chessboard[x][y] != -1:
-        #     if self.chessboard[x - 1][y] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y + 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x][y + 1] == -1:
-        #         mine += 1
-        #     if x < self.height - 1:
-        #         if self.chessboard[x + 1][y + 1] == -1:
-        #             mine += 1
-        #         if self.chessboard[x + 1][y] == -1:
-        #             mine += 1
-        # elif x == self.height - 1 and self.chessboard[x][y] != -1:
-        #     if self.chessboard[x][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y + 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x][y + 1] == -1:
-        #         mine += 1
-        # elif y == self.width - 1 and self.chessboard[x][y] != -1:
-        #     if self.chessboard[x - 1][y] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y] == -1:
-        #         mine += 1
-        # elif self.chessboard[x][y] != -1:
-        #     if self.chessboard[x - 1][y] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y - 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y] == -1:
-        #         mine += 1
-        #     if self.chessboard[x + 1][y + 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x][y + 1] == -1:
-        #         mine += 1
-        #     if self.chessboard[x - 1][y + 1] == -1:
-        #         mine += 1
         elif not self.chessboard[x][y].point_data.is_bomb:
             res = self.surround(x, y)
             for ele in res:
+                # print ((ele[0],ele[1]))
                 if self.chessboard[ele[0]][ele[1]].point_data.is_bomb:
                     mine += 1
         return mine
@@ -253,49 +181,23 @@ class Board:
             res(set((int,int))): This is a set of coordinates of all nearby boxes
         """
         res = set([])
-        if x == 0 and y == 0:
-            res.add((x + 1, y))
-            res.add((x + 1, y + 1))
-            res.add((x, y + 1))
-        elif x == self.height - 1 and y == self.width - 1:
-            res.add((x - 1, y))
-            res.add((x - 1, y - 1))
-            res.add((x, y - 1))
-        elif x == 0:
-            res.add((x, y - 1))
-            res.add((x + 1, y - 1))
-            res.add((x + 1, y))
-            if y < self.width - 1:
-                res.add((x + 1, y + 1))
-                res.add((x, y + 1))
-        elif y == 0:
-            res.add((x - 1, y))
-            res.add((x - 1, y + 1))
-            res.add((x, y + 1))
-            if x < self.height - 1:
-                res.add((x + 1, y + 1))
-                res.add((x + 1, y))
-        elif x == self.height - 1:
-            res.add((x, y - 1))
-            res.add((x - 1, y - 1))
-            res.add((x - 1, y))
-            res.add((x - 1, y + 1))
-            res.add((x, y + 1))
-        elif y == self.width - 1:
-            res.add((x - 1, y))
-            res.add((x - 1, y - 1))
-            res.add((x, y - 1))
-            res.add((x + 1, y - 1))
-            res.add((x + 1, y))
-        else:
-            res.add((x - 1, y))
-            res.add((x - 1, y - 1))
-            res.add((x, y - 1))
-            res.add((x + 1, y - 1))
-            res.add((x + 1, y))
-            res.add((x + 1, y + 1))
-            res.add((x, y + 1))
-            res.add((x - 1, y + 1))
+        if x+1 < self.height:
+            res.add((x+1, y))
+            if y+1 < self.width:
+                res.add((x+1, y+1))
+                res.add((x, y+1))
+            if y-1 >= 0:
+                res.add((x+1, y-1))
+                res.add((x, y-1))
+        if x-1 >= 0:
+            res.add((x-1, y))
+            if y+1 < self.width:
+                res.add((x-1, y+1))
+                res.add((x, y+1))
+            if y-1 >= 0:
+                res.add((x-1, y-1))
+                res.add((x, y-1))
+        # print("visit",(x,y))
         return res
 
     def isGameOver(self, x, y):
@@ -313,10 +215,12 @@ class Board:
             GameOver = True
         return GameOver
 
-# mineboard = Mineboard(40,16)
-# for row in mineboard.chessboard:
-#     for val in row:
-#         if val == -1:
-#             val = '*'
-#         print (val, end = ' ')
-#     print()
+
+mineboard = Board()
+for row in mineboard.chessboard:
+    for val in row:
+        if val.point_data.is_bomb:
+            val.point_data.bomb_around = '*'
+        print(val.point_data.bomb_around, end=' ')
+    print()
+# print (mineboard.mine_count)
