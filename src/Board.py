@@ -143,7 +143,7 @@ class Board:
         Returns:
             s (set((int,int))): This contains boxes' coordinates needed to be open
         """
-        s = set([])
+        # s = set([])
         self.chessboard[x][y].point_data.is_opened = True
         res = self.surround(x, y)
         while self.hasZero(res):
@@ -151,8 +151,10 @@ class Board:
                 point = self.chessboard[ele[0]][ele[1]]
                 if point.point_data.bomb_around == 0 and not point.point_data.is_opened:
                     point.point_data.is_opened = True
-                    s.add((point.point_data.x, point.point_data.y))
+                    # s.add((point.point_data.x, point.point_data.y))
                     self.checkZero(point.point_data.x, point.point_data.y)
+                else:
+                    point.point_data.is_opened = True
 
     def hasZero(self, s):
         """
