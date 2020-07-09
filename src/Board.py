@@ -62,8 +62,6 @@ class Board:
                     pass
                 else:
                     self.chessboard[x][y].set_bomb(False, mine)
-        # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
-        # return output_board
 
     def update(self, x, y, flag=False):
         """
@@ -80,27 +78,26 @@ class Board:
         Player can flag any squares
         Updating the board
         """
-        if self.isGameOver(x, y):
-            print("Game Over! Try again!")
+        if self.is_game_over(x, y):
             for row in self.chessboard:
                 for val in row:
                     val.open()
-            # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
-            # output_board = self.chessboard
         elif flag:
             self.chessboard[x][y].flag()
-            # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
-            # output_board = self.chessboard
         else:
             if not self.chessboard[x][y].open():
                 pass
-                # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
-                # output_board = self.chessboard
             else:
                 self.checkZero(x, y)
-                # output_board = [[self.chessboard[x][y] for x in range(self.height)] for y in range(self.width)]
-                # output_board = self.chessboard
-        # return output_board
+    
+    def get_board(self):
+        """
+        This function is used to get a clone of the board
+        Returns:
+            output_board (Board): This is the clone of the board
+        """
+        output_board = [[self.chessboard[x][y].output() for y in range(self.width)] for x in range(self.height)]
+        return output_board
 
     # Auxiliary functions
     def check(self, x, y):
@@ -172,7 +169,7 @@ class Board:
                 res.add((x, y - 1))
         return res
 
-    def isGameOver(self, x, y):
+    def is_game_over(self, x, y):
         """
         This function is used to determine if the user selects a mine
         Args:
