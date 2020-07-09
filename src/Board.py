@@ -7,7 +7,6 @@
 @time: 04/07/2020 18:03
 @description: This file is used to generate a mine board
 """
-import sys
 import random
 import time
 
@@ -16,9 +15,10 @@ from src.exceptions import TooManyMineException
 
 
 class Board:
-    def __init__(self, mine_count=25, width=16, height=None):
+    def __init__(self, mine_count=40, width=16, height=None):
         """
         This function is used to generate a mine board. Default size is 16*16
+        Default mine_count is 40
         Args:
             mine_count (int): This determines the total number of mines in a board
             width (int): This determines the width of the board
@@ -38,8 +38,8 @@ class Board:
     def initialise(self):
         """
         This function is used to initialise the board:
-            Randomly allocate bomb in the board
-            Number each boxes
+            Randomly allocate mine in the board
+            Number each square
         Returns:
             void
         """
@@ -52,8 +52,8 @@ class Board:
             self.mines[i] = randnum
             del randnum
         for r in self.mines:
-            x = r // self.width
-            y = r % self.height
+            x = r // self.height
+            y = r % self.width
             self.chessboard[x][y].set_bomb(True)
         for x in range(self.height):
             for y in range(self.width):
@@ -67,17 +67,17 @@ class Board:
 
     def update(self, x, y, flag=False):
         """
-        This function is used to update a board after user selects a box
+        This function is used to update a board after user selects a square
         Args:
-            flag (boolean): This value determines if user flags a box
-            x (int): This is the x-value of the box
-            y (int): This is the y-value of the box
+            flag (boolean): This value determines if user flags a square
+            x (int): This is the x-value of the square
+            y (int): This is the y-value of the square
         Returns:
             void
         """
         """
         When GameOver, player can see the real board
-        Player can flag any boxes
+        Player can flag any squares
         Updating the board
         """
         if self.isGameOver(x, y):
@@ -105,19 +105,19 @@ class Board:
     # Auxiliary functions
     def check(self, x, y):
         """
-        This function is used to number each boxes in the mine board.
-        The value of a box is the number of mines around the box.
-        Or the value is -1 if the box is mine.
+        This function is used to number each square in the mine board.
+        The value of a box is the number of mines around the square.
+        Or the value is -1 if the square is mine.
         Args:
-            x (int): This is the x-value of the box while iterating
-            y (int): This is the y-value of the box while iterating
+            x (int): This is the x-value of the square while iterating
+            y (int): This is the y-value of the square while iterating
         Returns:
-            mine (int): This returns the value of the box.
+            mine (int): This returns the value of the square
         """
         mine = 0
-        if self.chessboard[x][y].point_data.is_bomb:
+        if self.chessboard[x][y].is_bomb():
             mine = -1
-        elif not self.chessboard[x][y].point_data.is_bomb:
+        elif not self.chessboard[x][y].is_bomb():
             res = self.surround(x, y)
             for ele in res:
                 if self.chessboard[ele[0]][ele[1]].is_bomb():
@@ -134,7 +134,7 @@ class Board:
         Returns:
             void
         """
-        self.chessboard[x][y].point_data.is_opened = True
+        self.chessboard[x][y].open()
         for p in self.surround(x, y):
             point = self.chessboard[p[0]][p[1]]
             if point.is_bomb():
@@ -176,8 +176,8 @@ class Board:
         """
         This function is used to determine if the user selects a mine
         Args:
-            x (int): This is the x-value of the selected box
-            y (int): This is the y-value of the selected box
+            x (int): This is the x-value of the selected square
+            y (int): This is the y-value of the selected square
 
         Returns:
             True, if it is a bomb
@@ -185,6 +185,8 @@ class Board:
         """
         return self.chessboard[x][y].is_bomb()
 
+
+# Section below is for test use
 
 def test():
     mineboard = Board()
@@ -197,8 +199,9 @@ def test():
     mineboard.update(5, 5)
     for row in mineboard.chessboard:
         for val in row:
-            print(val.point_data.is_opened, end=" ")
+            print(val.point_data.is_opened, end=' ')
         print()
+
 
 if __name__ == '__main__':
     test()
