@@ -31,7 +31,7 @@ class Board:
         self.height = height
         self.width = width
         self.mine_count = mine_count
-        self.chessboard = [[Point(x, y) for y in range(width)] for x in range(height)]
+        self.chessboard = [[Point(x, y) for x in range(width)] for y in range(height)]
         self.mines = [0 for z in range(mine_count)]
         self.initialise()
 
@@ -52,16 +52,16 @@ class Board:
             self.mines[i] = rand_num
             del rand_num
         for r in self.mines:
-            x = r // self.height
-            y = r % self.width
-            self.chessboard[x][y].set_bomb(True)
+            y = r // self.height
+            x = r % self.width
+            self.chessboard[y][x].set_bomb(True)
         for x in range(self.height):
             for y in range(self.width):
                 mine = self.check(x, y)
                 if mine == -1:
                     pass
                 else:
-                    self.chessboard[x][y].set_bomb(False, mine)
+                    self.chessboard[y][x].set_bomb(False, mine)
 
     def update(self, x, y, flag=False):
         """
@@ -74,7 +74,7 @@ class Board:
             game_continue (boolean): This determines if the game should continue
         """
         if flag:
-            self.chessboard[x][y].flag()
+            self.chessboard[y][x].flag()
             return True
 
         if self.is_game_over(x, y):
@@ -83,7 +83,7 @@ class Board:
                     val.open()
             return False
 
-        if self.chessboard[x][y].open():
+        if self.chessboard[y][x].open():
             self.open(x, y)
         return True
 
@@ -93,7 +93,7 @@ class Board:
         Returns:
             output_board (Board): This is the clone of the board
         """
-        output_board = [[self.chessboard[x][y].output() for y in range(self.width)] for x in range(self.height)]
+        output_board = [[self.chessboard[y][x].output() for x in range(self.width)] for y in range(self.height)]
         return output_board
 
     def is_game_finish(self):
@@ -122,12 +122,12 @@ class Board:
             mine (int): This returns the value of the square
         """
         mine = 0
-        if self.chessboard[x][y].is_bomb():
+        if self.chessboard[y][x].is_bomb():
             mine = -1
-        elif not self.chessboard[x][y].is_bomb():
+        elif not self.chessboard[y][x].is_bomb():
             res = self.surround(x, y)
             for ele in res:
-                if self.chessboard[ele[0]][ele[1]].is_bomb():
+                if self.chessboard[ele[1]][ele[0]].is_bomb():
                     mine += 1
         return mine
 
@@ -141,9 +141,9 @@ class Board:
         Returns:
             void
         """
-        self.chessboard[x][y].open()
+        self.chessboard[y][x].open()
         for p in self.surround(x, y):
-            point = self.chessboard[p[0]][p[1]]
+            point = self.chessboard[p[1]][p[0]]
             if point.is_bomb():
                 continue
             if point.open():
@@ -190,7 +190,7 @@ class Board:
             True, if it is a bomb
             False, otherwise
         """
-        return self.chessboard[x][y].is_bomb()
+        return self.chessboard[y][x].is_bomb()
 
 
 # Section below is for test use
