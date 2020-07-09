@@ -46,6 +46,20 @@ class Point:
         """
         return self.point_data.is_bomb
 
+    def is_correct_state(self):
+        """
+        To check if the point is in the correct state to end.
+
+        Returns:
+            True if correct.
+            False otherwise.
+        """
+        if self.is_bomb() and self.point_data.is_flagged:
+            return True
+        if self.point_data.is_opened:
+            return True
+        return False
+
     def open(self):
         """
         True if other points should be opened as well.
