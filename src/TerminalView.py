@@ -90,17 +90,17 @@ class TerminalView(View):
         if operation == 'n':
             return board
         # Get mine_count
-        mine_count = self._input_check(self._generate_string_collection(int("inf")), "Type the mine_count: \t")
+        mine_count = self._input_check(self._generate_string_collection(99), "Type the mine_count: \t")
         board["mine_count"] = int(mine_count)
         # Get width
-        width = self._input_check(self._generate_string_collection(int("inf")), "Type the board's width: \t")
+        width = self._input_check(self._generate_string_collection(99), "Type the board's width: \t")
         board["width"] = int(width)
         # Get height
-        height = self._input_check(self._generate_string_collection(int("inf")), "Type the board's height: \t")
+        height = self._input_check(self._generate_string_collection(99), "Type the board's height: \t")
         board["height"] = int(height)
-        
+
         return board
-        
+
     def _input_check(self, checklist, message):
         """
         Ask for input until required is given.
