@@ -22,7 +22,6 @@ class View(ABC):
     def draw(self, board):
         """
         Show the board. Provide a GUI.
-
         Args:
             board (matrix of PointData): The processed board with key info hidden
         """
@@ -32,19 +31,25 @@ class View(ABC):
     def input(self):
         """
         Get the the next step of the player.
-
         Returns:
             input (tuple of int): The coordinate of the user input.
+        """
+        pass
+    
+    @abstractmethod
+    def get_board_size(self):
+        """
+        Get the board dimension at start of game
+        Returns:
+            int (tuple of int): The dimensions of user's board
         """
         pass
 
     def run(self, board):
         """
         To run the view, showing the board and get an input from the player.
-
         Args:
             board (matrix of PointData): The processed board with key info hidden
-
         Returns:
             result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
