@@ -12,10 +12,11 @@ import time
 
 from src.Point import Point
 from src.exceptions import TooManyMineException
+from src.constants import BOARD_DIM
 
 
 class Board:
-    def __init__(self, mine_count=40, width=16, height=None):
+    def __init__(self, mine_count=BOARD_DIM["MINE_COUNT"], width=BOARD_DIM["BOARD_WIDTH"], height=BOARD_DIM["BOARD_HEIGHT"]):
         """
         This function is used to generate a mine board. Default size is 16*16
         Default mine_count is 40
@@ -156,7 +157,6 @@ class Board:
         Args:
             x (int): This is the x-value of the box
             y (int): This is the y-value of the box
-
         Returns:
             res(set((int,int))): This is a set of coordinates of all nearby boxes
         """
@@ -185,7 +185,6 @@ class Board:
         Args:
             x (int): This is the x-value of the selected square
             y (int): This is the y-value of the selected square
-
         Returns:
             True, if it is a bomb
             False, otherwise
