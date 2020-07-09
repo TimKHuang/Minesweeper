@@ -37,7 +37,7 @@ class TerminalView(View):
         # print the x-axis
         print("\t", end="")
         for x in range(self.cols):
-            print(x, end=" ")
+            print(x, end=" " if len(str(x)) == 2 else "  ")
         print("\n")
         # print the rest lines
         for y in range(self.rows):
@@ -48,14 +48,14 @@ class TerminalView(View):
                 point = board[y][x]
                 if point.is_opened:
                     if point.is_bomb:
-                        print("B", end=" ")
+                        print("B", end="  ")
                         continue
-                    print(point.bomb_around, end=" ")
+                    print(point.bomb_around, end="  ")
                     continue
                 if point.is_flagged:
-                    print("f", end=" ")
+                    print("f", end="  ")
                     continue
-                print("*", end=" ")
+                print("*", end="  ")
             print()
 
     def input(self):
