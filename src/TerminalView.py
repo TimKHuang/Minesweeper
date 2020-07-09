@@ -56,7 +56,7 @@ class TerminalView(View):
                 if point.is_flagged:
                     print(COLOUR["F"] + "f", end=" ")
                     continue
-                print(COLOUR["*"] + "*", end=" " if x < 9 else "  ")
+                print(COLOUR["*"] + "*", end=" " if x < 10 else "  ")
             print()
 
     def input(self):
@@ -87,7 +87,7 @@ class TerminalView(View):
         """
         board = {}
         # Get operation
-        operation = self._input_check({"y", "n"}, "Custom board? Please type y or n: \t")
+        operation = self._input_check({"y", "n"}, "Customise board? Please type y or n: \t")
         if operation == 'n':
             return board
         # Get mine_count
