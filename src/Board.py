@@ -88,8 +88,8 @@ class Board:
             if not self.chessboard[x][y].open():
                 pass
             else:
-                self.checkZero(x, y)
-    
+                self.openZero(x, y)
+
     def get_board(self):
         """
         This function is used to get a clone of the board
@@ -121,7 +121,7 @@ class Board:
                     mine += 1
         return mine
 
-    def checkZero(self, x, y):
+    def openZero(self, x, y):
         """
         This function is used to update the board when a 0-value
         point is opened
@@ -137,7 +137,7 @@ class Board:
             if point.is_bomb():
                 continue
             if point.open():
-                self.checkZero(point.point_data.x, point.point_data.y)
+                self.openZero(point.point_data.x, point.point_data.y)
 
     def surround(self, x, y):
         """
