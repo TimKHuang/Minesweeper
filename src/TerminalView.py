@@ -9,6 +9,7 @@
 """
 
 from src.View import View
+from src.constants import COLOUR
 
 
 class TerminalView(View):
@@ -37,25 +38,25 @@ class TerminalView(View):
         # print the x-axis
         print("\t", end="")
         for x in range(self.cols):
-            print(x, end=" " if len(str(x)) == 2 else "  ")
+            print(x, end=" ")
         print("\n")
         # print the rest lines
         for y in range(self.rows):
-            # print the y-axis
+            # print the y-axis"
             print(y, end="\t")
             # print the board
             for x in range(self.cols):
                 point = board[y][x]
                 if point.is_opened:
                     if point.is_bomb:
-                        print("B", end="  ")
+                        print(COLOUR["B"] + "B", end=" ")
                         continue
-                    print(point.bomb_around, end="  ")
+                    print(COLOUR[point.bomb_around % 10] + str(point.bomb_around), end=" ")
                     continue
                 if point.is_flagged:
-                    print("f", end="  ")
+                    print(COLOUR["F"] + "f", end=" ")
                     continue
-                print("*", end="  ")
+                print(COLOUR["*"] + "*", end=" " if x < 9 else "  ")
             print()
 
     def input(self):
