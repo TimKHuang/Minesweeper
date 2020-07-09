@@ -13,11 +13,10 @@ from src.View import View
 
 class TerminalView(View):
     """
-    Showing the board in terminal withe characters.
+    Showing the board in terminal with characters.
     * means not opened.
     f means flagged.
     number is the bomb around.
-
     Attributes:
         rows (int): The row number of the board.
         cols (int): The col number of the board.
@@ -30,7 +29,6 @@ class TerminalView(View):
     def draw(self, board):
         """
         Show the board. Provide a GUI.
-
         Args:
             board (matrix of PointData): The processed board with key info hidden
         """
@@ -45,7 +43,7 @@ class TerminalView(View):
         for y in range(self.rows):
             # print the y-axis
             print(y, end="\t")
-            # print teh board
+            # print the board
             for x in range(self.cols):
                 point = board[y][x]
                 if point.is_opened:
@@ -64,7 +62,6 @@ class TerminalView(View):
         """
         Get the the next step of the player.
         By typing the coordinate.
-
         Returns:
             result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
@@ -81,15 +78,36 @@ class TerminalView(View):
 
         return result
 
+    def get_board_size(self):
+        """
+        This function is used to get user wanted board size
+        Returns:
+            board ({"mine_count": int, "width": int, "height": int}): The dimension of the board
+        """
+        board = {}
+        # Get operation
+        operation = self._input_check({"y", "n"}, "Custom board? Please type y or n: \t")
+        if operation == 'n':
+            return board
+        # Get mine_count
+        mine_count = self._input_check(self._generate_string_collection(int("inf")), "Type the mine_count: \t")
+        board["mine_count"] = int(mine_count)
+        # Get width
+        width = self._input_check(self._generate_string_collection(int("inf")), "Type the board's width: \t")
+        board["width"] = int(width)
+        # Get height
+        height = self._input_check(self._generate_string_collection(int("inf")), "Type the board's height: \t")
+        board["height"] = int(height)
+        
+        return board
+        
     def _input_check(self, checklist, message):
         """
         Ask for input until required is given.
         Message should show the accepted characters clearly.
-
         Args:
             checklist (List of str): All the accepted strings
             message (str): A message asking for input.
-
         Returns:
             user_input (str): accepted input
         """
@@ -103,11 +121,9 @@ class TerminalView(View):
         """
         This will generate a list of strings.
         The strings are all the numbers in the range.
-
         Args:
             maximum (int): The maximum number.
             minimum (int): The minimum number. default 0
-
         Returns:
             collections (List of str): The string collection generated
         """
