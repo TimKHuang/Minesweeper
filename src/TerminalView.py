@@ -8,7 +8,7 @@
 @description: Provides a terminal view showing the board with characters.
 """
 
-from .View import View
+from src.View import View
 
 
 class TerminalView(View):
@@ -50,14 +50,14 @@ class TerminalView(View):
                 point = board[y][x]
                 if point.is_opened:
                     if point.is_bomb:
-                        print("B", end="")
+                        print("B", end=" ")
                         continue
                     print(point.bomb_around, end=" ")
                     continue
                 if point.is_flagged:
                     print("f", end=" ")
                     continue
-                print("*", end="")
+                print("*", end=" ")
             print()
 
     def input(self):
@@ -116,3 +116,16 @@ class TerminalView(View):
             collection.append(str(i))
 
         return collection
+
+
+# Section below is for test use
+
+def test():
+    from src.Board import Board
+    view = TerminalView()
+    result = view.run(Board().get_board())
+    print(result)
+
+
+if __name__ == '__main__':
+    test()
