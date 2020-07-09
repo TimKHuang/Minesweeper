@@ -71,8 +71,9 @@ class Board:
             x (int): This is the x-value of the square
             y (int): This is the y-value of the square
         Returns:
-            void
+            game_continue (boolean): This determines if the game should continue
         """
+        game_continue = True
         """
         When GameOver, player can see the real board
         Player can flag any squares
@@ -82,13 +83,19 @@ class Board:
             for row in self.chessboard:
                 for val in row:
                     val.open()
+            game_continue = False
         elif flag:
             self.chessboard[x][y].flag()
+            if self.is_game_finish():
+                game_continue = False
         else:
             if not self.chessboard[x][y].open():
                 pass
             else:
                 self.openZero(x, y)
+            if self.is_game_finish():
+                game_continue = False
+        return game_continue
 
     def get_board(self):
         """
@@ -98,6 +105,19 @@ class Board:
         """
         output_board = [[self.chessboard[x][y].output() for y in range(self.width)] for x in range(self.height)]
         return output_board
+
+    def is_game_finish(self):
+        """
+        This function determines if the game is finished
+        Returns:
+            True; if the game is finished
+            False; otherwise
+        """
+        for row in self.chessboard:
+            for val in row:
+                if not val.is_correct_state():
+                    return False
+        return True
 
     # Auxiliary functions
     def check(self, x, y):
