@@ -73,29 +73,19 @@ class Board:
         Returns:
             game_continue (boolean): This determines if the game should continue
         """
-        game_continue = True
-        """
-        When GameOver, player can see the real board
-        Player can flag any squares
-        Updating the board
-        """
         if self.is_game_over(x, y):
             for row in self.chessboard:
                 for val in row:
                     val.open()
-            game_continue = False
+            return False
         elif flag:
             self.chessboard[x][y].flag()
-            if self.is_game_finish():
-                game_continue = False
         else:
             if not self.chessboard[x][y].open():
                 pass
             else:
                 self.openZero(x, y)
-            if self.is_game_finish():
-                game_continue = False
-        return game_continue
+        return True
 
     def get_board(self):
         """

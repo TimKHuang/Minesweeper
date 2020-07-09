@@ -41,7 +41,7 @@ class View(ABC):
         """
         Get the board dimension at start of game
         Returns:
-            int (tuple of int): The dimensions of user's board
+            board ({"mine_count": int, "width": int, "height": int}): The dimension of the board
         """
         pass
 
