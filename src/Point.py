@@ -61,7 +61,7 @@ class Point:
         """ Flag the point"""
         if self.point_data.is_opened:
             return
-        self.point_data.is_flagged = True
+        self.point_data.is_flagged = not self.point_data.is_flagged
 
     def output(self):
         """
