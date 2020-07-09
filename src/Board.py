@@ -46,11 +46,11 @@ class Board:
         random.seed(time.time())  # set seed, to generate distinct random number
         size = self.height * self.width - 1
         for i in range(self.mine_count):
-            randnum = int(random.random() * size + 1)
-            while randnum in self.mines:
-                randnum = int(random.random() * size + 1)
-            self.mines[i] = randnum
-            del randnum
+            rand_num = int(random.random() * size + 1)
+            while rand_num in self.mines:
+                rand_num = int(random.random() * size + 1)
+            self.mines[i] = rand_num
+            del rand_num
         for r in self.mines:
             x = r // self.height
             y = r % self.width
@@ -67,24 +67,24 @@ class Board:
         """
         This function is used to update a board after user selects a square
         Args:
-            flag (boolean): This value determines if user flags a square
             x (int): This is the x-value of the square
             y (int): This is the y-value of the square
+            flag (boolean): This value determines if user flags a square
         Returns:
             game_continue (boolean): This determines if the game should continue
         """
+        if flag:
+            self.chessboard[x][y].flag()
+            return True
+
         if self.is_game_over(x, y):
             for row in self.chessboard:
                 for val in row:
                     val.open()
             return False
-        elif flag:
-            self.chessboard[x][y].flag()
-        else:
-            if not self.chessboard[x][y].open():
-                pass
-            else:
-                self.openZero(x, y)
+
+        if self.chessboard[x][y].open():
+            self.open(x, y)
         return True
 
     def get_board(self):
@@ -131,7 +131,7 @@ class Board:
                     mine += 1
         return mine
 
-    def openZero(self, x, y):
+    def open(self, x, y):
         """
         This function is used to update the board when a 0-value
         point is opened
@@ -147,7 +147,7 @@ class Board:
             if point.is_bomb():
                 continue
             if point.open():
-                self.openZero(point.point_data.x, point.point_data.y)
+                self.open(point.point_data.x, point.point_data.y)
 
     def surround(self, x, y):
         """

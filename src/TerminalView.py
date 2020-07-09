@@ -71,10 +71,10 @@ class TerminalView(View):
         result["flag"] = operation == 'y'
         # Get x
         x = self._input_check(self._generate_string_collection(self.cols), "Type the x coordinate: \t")
-        result["x"] = x
+        result["x"] = int(x)
         # Get y
         y = self._input_check(self._generate_string_collection(self.rows), "Type the y coordinate: \t")
-        result["y"] = y
+        result["y"] = int(y)
 
         return result
 
@@ -100,6 +100,26 @@ class TerminalView(View):
         board["height"] = int(height)
 
         return board
+
+    def fail(self):
+        """
+        Deal with the situation when game fails.
+        Returns:
+            continue (bool): True is restart. False otherwise.
+        """
+        print("Sorry, you've met a bomb.")
+        operation = self._input_check({"y", "n"}, "Restart the game? Please type y or n: \t")
+        return operation == "y"
+
+    def win(self):
+        """
+        Deal with the situation when game wins.
+        Returns:
+            continue (bool): True is restart. False otherwise.
+        """
+        print("Wow excellent!")
+        operation = self._input_check({"y", "n"}, "Restart the game? Please type y or n: \t")
+        return operation == "y"
 
     def _input_check(self, checklist, message):
         """

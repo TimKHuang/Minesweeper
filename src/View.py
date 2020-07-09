@@ -45,6 +45,24 @@ class View(ABC):
         """
         pass
 
+    @abstractmethod
+    def fail(self):
+        """
+        Deal with the situation when game fails.
+        Returns:
+            continue (bool): True is restart. False otherwise.
+        """
+        pass
+
+    @abstractmethod
+    def win(self):
+        """
+        Deal with the situation when game wins.
+        Returns:
+            continue (bool): True is restart. False otherwise.
+        """
+        pass
+
     def run(self, board):
         """
         To run the view, showing the board and get an input from the player.

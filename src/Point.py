@@ -146,7 +146,7 @@ class PointData:
         copy.is_bomb = self.is_bomb
         copy.is_opened = self.is_opened
         copy.is_flagged = self.is_flagged
-        copy.is_bomb = self.is_bomb
+        copy.bomb_around = self.bomb_around
         return copy
 
     def __str__(self):
