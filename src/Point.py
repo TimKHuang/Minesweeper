@@ -12,7 +12,6 @@
 class Point:
     """
     PointData is the data structure of each point on the board.
-
     Attributes:
         point_data (PointData): the data of the point
     """
@@ -20,17 +19,17 @@ class Point:
     def __init__(self, x, y):
         """
         Constructor of PointData
-
         Args:
             x (int): x-coordinate of the point
             y (int): y-coordinate of the point
         """
+        self.x = x
+        self.y = y
         self.point_data = PointData(x, y)
 
     def set_bomb(self, is_bomb, number=0):
         """
         set the number of bombs around the current point.
-
         Args:
             is_bomb (bool): if this is a bomb
             number (int): number of bombs around
@@ -49,7 +48,6 @@ class Point:
     def is_correct_state(self):
         """
         To check if the point is in the correct state to end.
-
         Returns:
             True if correct.
             False otherwise.
@@ -80,7 +78,6 @@ class Point:
     def output(self):
         """
         Generate an output that can be passed to the user
-
         Returns:
             output (PointData): The processed data of the pointData
         """
@@ -96,7 +93,6 @@ class Point:
 class PointData:
     """
     PointData stores the information of a point.
-
     Attributes:
         x (int): x-coordinate of the point
         y (int): y-coordinate of the point
@@ -109,7 +105,6 @@ class PointData:
     def __init__(self, x, y):
         """
         Constructor of PointData
-
         Args:
             x (int): x-coordinate of the point
             y (int): y-coordinate of the point
@@ -125,20 +120,18 @@ class PointData:
         """
         Hide the information based on the current status.
         Should only be called when copy the data and pass it to the user.
-
         Returns:
             result (PointData): a point with only necessary point.
         """
-        self.is_bomb = None
         if self.is_opened:
             self.is_flagged = None
         else:
+            self.is_bomb = None
             self.bomb_around = None
 
     def clone(self):
         """
         Get a copy of the point.
-
         Returns:
             copy (PointData): The copied result
         """
