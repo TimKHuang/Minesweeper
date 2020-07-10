@@ -43,7 +43,7 @@ class TerminalView(View):
         # print the rest lines
         for y in range(self.rows):
             # print the y-axis"
-            print(y, end="\t")
+            print(COLOUR["*"] + str(y), end="\t")
             # print the board
             for x in range(self.cols):
                 point = board[y][x]
@@ -68,7 +68,7 @@ class TerminalView(View):
         """
         result = {}
         # Get operation.
-        operation = self._input_check({"y", "n"}, "Flag a point? Please type y or n: \t")
+        operation = self._input_check({"y", "n"}, COLOUR["*"] + "Flag a point? Please type y or n: \t")
         result["flag"] = operation == 'y'
         # Get x
         x = self._input_check(self._generate_string_collection(self.cols), "Type the x coordinate: \t")
@@ -108,7 +108,7 @@ class TerminalView(View):
         Returns:
             continue (bool): True is restart. False otherwise.
         """
-        print("Sorry, you've met a bomb.")
+        print(COLOUR["*"] + "Sorry, you've met a bomb.")
         operation = self._input_check({"y", "n"}, "Restart the game? Please type y or n: \t")
         return operation == "y"
 
@@ -118,7 +118,7 @@ class TerminalView(View):
         Returns:
             continue (bool): True is restart. False otherwise.
         """
-        print("Wow excellent!")
+        print(COLOUR["*"] + "Wow excellent!")
         operation = self._input_check({"y", "n"}, "Restart the game? Please type y or n: \t")
         return operation == "y"
 
