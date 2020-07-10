@@ -34,7 +34,7 @@ class Board:
         self.width = width
         self.mine_count = mine_count
         self.chessboard = [[Point(x, y) for x in range(width)] for y in range(height)]
-        self.mines = [0 for z in range(mine_count)]
+        self.mines = [-1 for z in range(mine_count)]
         self.initialise()
 
     def initialise(self):
@@ -48,9 +48,9 @@ class Board:
         random.seed(time.time())  # set seed, to generate distinct random number
         size = self.height * self.width - 1
         for i in range(self.mine_count):
-            rand_num = int(random.random() * size + 1)
+            rand_num = int(random.random() * size)
             while rand_num in self.mines:
-                rand_num = int(random.random() * size + 1)
+                rand_num = int(random.random() * size)
             self.mines[i] = rand_num
             del rand_num
         for r in self.mines:
