@@ -56,37 +56,49 @@ class Board:
         for r in self.mines:
             y = r // self.height
             x = r % self.width
-            self.chessboard[y][x].set_bomb(True)
+            self.search(x, y).set_bomb(True)
         for x in range(self.height):
             for y in range(self.width):
                 mine = self.check(Point(x, y))
-                if mine == -1:
-                    pass
-                else:
-                    self.chessboard[y][x].set_bomb(False, mine)
+                if mine != -1:
+                    self.search(x, y).set_bomb(False, mine)
 
-    def update(self, p, flag=False):
+    def update(self, x, y, flag=False):
         """
         This function is used to update a board after user selects a square
         Args:
-            p (Point): The square that being opened
+            x (int): x coordinate
+            y (int): y coordinate
             flag (boolean): This value determines if user flags a square
         Returns:
             game_continue (boolean): This determines if the game should continue
         """
+        p = self.search(x, y)
+
         if flag:
-            self.chessboard[p.y][p.x].flag()
+            p.flag()
             return True
 
-        if self.is_game_over(p):
+        if p.is_bomb():
             for row in self.chessboard:
                 for val in row:
                     val.open()
             return False
 
-        if self.chessboard[p.y][p.x].open():
+        if p.open():
             self.open(p)
         return True
+
+    def search(self, x, y):
+        """
+        Find a point at (x, y)
+        Args:
+            x (int): x coordinate
+            y (int): y coordinate
+        Returns:
+            p (Point): the point found.
+        """
+        return self.chessboard[y][x]
 
     def get_board(self):
         """
@@ -94,7 +106,7 @@ class Board:
         Returns:
             output_board (Board): This is the clone of the board
         """
-        output_board = [[self.chessboard[y][x].output() for x in range(self.width)] for y in range(self.height)]
+        output_board = [[self.search(x, y).output() for x in range(self.width)] for y in range(self.height)]
         return output_board
 
     def is_game_finish(self):
@@ -127,7 +139,7 @@ class Board:
         elif not p.is_bomb():
             res = self.surround(p)
             for ele in res:
-                if self.chessboard[ele[1]][ele[0]].is_bomb():
+                if self.search(ele[0], ele[1]).is_bomb():
                     mine += 1
         return mine
 
@@ -142,11 +154,11 @@ class Board:
         """
         p.open()
         for s in self.surround(p):
-            point = self.chessboard[s[1]][s[0]]
+            point = self.search(s[0], s[1])
             if point.is_bomb():
                 continue
             if point.open():
-                self.open(Point(s[0], s[1]))
+                self.open(point)
 
     def surround(self, p):
         """
@@ -175,17 +187,6 @@ class Board:
                 res.add((p.x - 1, p.y - 1))
                 res.add((p.x, p.y - 1))
         return res
-
-    def is_game_over(self, p):
-        """
-        This function is used to determine if the user selects a mine
-        Args:
-            p (Point): The square being opened
-        Returns:
-            True, if it is a bomb
-            False, otherwise
-        """
-        return self.chessboard[p.y][p.x].is_bomb()
 
 
 # Section below is for test use

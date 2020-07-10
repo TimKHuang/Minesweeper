@@ -37,7 +37,7 @@ class Minesweeper:
 
         while not board.is_game_finish():
             operation = self.view.run(board.get_board())
-            if not board.update(Point(operation["x"], operation["y"]), operation["flag"]):
+            if not board.update(operation["x"], operation["y"], operation["flag"]):
                 self.view.draw(board.get_board())
                 return self.view.fail()
         return self.view.win()
