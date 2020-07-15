@@ -28,3 +28,24 @@ COLOUR = {"B": "\033[1m",
           7: "\033[36m",
           8: "\033[37m",
           }
+
+# The dictionary defines the RGB value for different colours
+RGB = {"PALE_GREEN": (199, 237, 233),
+       "WHITE": (255, 255, 255),
+       "HAZE": (175, 215, 237),
+       "CYANINE": (92, 167, 186)
+}
+
+# The dictionary defines the dimension of the board for Intermediate
+INTERMEDIATE_BOARD = {
+    "MINE_COUNT": 99,
+    "BOARD_WIDTH": 16,
+    "BOARD_HEIGHT": 30
+}
+
+# The dictionary defines the level of the game
+GAME_LEVEL = {
+    "B": "Beginner",
+    "I": "Intermediate",
+    "C": "Customise"
+}
