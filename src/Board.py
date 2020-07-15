@@ -57,8 +57,8 @@ class Board:
             y = r // self.height
             x = r % self.width
             self.search(x, y).set_bomb(True)
-        for x in range(self.height):
-            for y in range(self.width):
+        for x in range(self.width):
+            for y in range(self.height):
                 mine = self.check(Point(x, y))
                 if mine != -1:
                     self.search(x, y).set_bomb(False, mine)
@@ -170,9 +170,9 @@ class Board:
             res(set((int,int))): This is a set of coordinates of all nearby boxes
         """
         res = set([])
-        if p.x + 1 < self.height:
+        if p.x + 1 < self.width:
             res.add((p.x + 1, p.y))
-            if p.y + 1 < self.width:
+            if p.y + 1 < self.height:
                 res.add((p.x + 1, p.y + 1))
                 res.add((p.x, p.y + 1))
             if p.y - 1 >= 0:
@@ -180,7 +180,7 @@ class Board:
                 res.add((p.x, p.y - 1))
         if p.x - 1 >= 0:
             res.add((p.x - 1, p.y))
-            if p.y + 1 < self.width:
+            if p.y + 1 < self.height:
                 res.add((p.x - 1, p.y + 1))
                 res.add((p.x, p.y + 1))
             if p.y - 1 >= 0:
