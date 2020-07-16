@@ -64,30 +64,45 @@ class GUI:
         # Update the screen the first time
         pygame.display.flip()
 
-    # def draw(self, board):
-    #     """
-    #     This function is used to draw the board, and update the board
-    #     Args:
-    #         board: the mine board
-    #     Returns:
-    #         void
-    #     """
-    #     # Get the dimension of the board
-    #     rows = len(board)
-    #     cols = len(board[0])
-    #     # square dimension
-    #     sqr_width = 400 / cols
-    #     sqr_height = 600 / rows
-    #     for y in range(rows):
-    #         # Draw the y axis
-    #         pygame.draw.line(self.screen, RGB["CYANINE"] (0, sqr_height * y), (self.width, sqr_height * y), 5)
-    #         for x in range(cols):
-    #             # Draw the x axis
-    #             pygame.draw.line(self.screen, RGB["CYANINE"], (sqr_width * x, 0), (sqr_width * x, self.height), 5)
-    #             square = Button(())
-    #             point = board[y][x]
-    #             if point.is_opened:
-    #                 if
+    def draw(self, board):
+        """
+        This function is used to draw the board, and update the board
+        Args:
+            board: the mine board
+        Returns:
+            void
+        """
+        # Get the dimension of the board
+        rows = len(board)
+        cols = len(board[0])
+        # square dimension
+        sqr_width = self.width / cols
+        sqr_height = self.height / rows
+        for y in range(rows):
+            # Draw the y axis
+            pygame.draw.line(self.screen, RGB["CYANINE"](0, sqr_height * y), (self.width, sqr_height * y), 5)
+            for x in range(cols):
+                # Draw the x axis
+                pygame.draw.line(self.screen, RGB["CYANINE"], (sqr_width * x, 0), (sqr_width * x, self.height), 5)
+                # Draw the square
+                square = Button((x * sqr_width + 5, y * sqr_height + 5, sqr_width - 5, sqr_height - 5), RGB["HAZE"])
+                square.draw_square(self.screen)
+
+    def detect_event(self):
+        """
+        This function is used to update the GUI according to the event
+        Args:
+            event(Event): user's event
+
+        Returns:
+            void
+        """
+        for event in pygame.event.get():
+            # Shut down the game
+            if event.type == pygame.QUIT:
+                exit()
+
+            # Choose the buttons
 
 
 #
@@ -106,33 +121,15 @@ class GUI:
 #         # print(board_size)
 #         intermediate_button.update_button(event, window)
 #         customise_button.update_button(event, window)
-#
-#
-# # Draw the board
-# def display_board(board):
-#     rows = len(board)
-#     cols = len(board[0])
-#     sqr_width = 400 / cols
-#     sqr_height = 600 / rows
-#     # Draw the x, y axis
-#     for y in range(rows):
-#         pygame.draw.line(window, (92, 167, 186), (0, sqr_height * y), (400, sqr_height * y), 5)
-#         for x in range(cols):
-#             pygame.draw.line(window, (92, 167, 186), (sqr_width * x, 0), (sqr_width * x, 600), 5)
-#     # Create the mine_board
-#     mine_board = [[Button((x * sqr_width + 5, y * sqr_height + 5, sqr_width - 5, sqr_height - 5), (199, 237, 233), None,
-#                           None, None) for x in range(cols)] for y in range(rows)]
-#     # Display the board
-#     for row in mine_board:
-#         for val in row:
-#             val.draw_square(window)
+
 
 # The section below is for test purposes
-
 
 def test():
     view = GUI()
     GUI.initialise(view)
+    while True:
+        view.detect_event()
 
 
 if __name__ == '__main__':
