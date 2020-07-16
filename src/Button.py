@@ -13,21 +13,52 @@ from src.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD
 
 
 class Button:
-    def __init__(self, dim, message, bg_colour, message_colour, message_size):
+    def __init__(self, dim, bg_colour, message=None, message_colour=RGB["WHITE"], message_size=30):
         """
         This function is used to initialise a button with a given message
         The message will be located at the centre of the button
         Args:
-            message(String): the message needs to be displayed
             bg_colour(Tuple of 3): the bg color of button
-            message_colour(Tuple of 3): the colour of the message
             dim (Tuple of 4): contains where the button is, and the size of the button
         """
         self.bg_colour = bg_colour
-        self.message = message
-        self.message_colour = message_colour
-        self.message_size = message_size
         self.dim = dim
+        if message is not None:
+            self.message = message
+            self.message_size = message_size
+            self.message_colour = message_colour
+
+    def draw_square(self, screen):
+        """
+        This function is used to draw the squares for the board
+        Args:
+            screen(String): where the user wants to display the square
+        Returns:
+            void
+        """
+        pygame.draw.rect(screen, self.bg_colour, self.dim)
+
+    def update_square(self, screen, event, pointdata, message_size=10):
+        """
+        This function is used to update the selected square
+        Args:
+            message_size:
+            pointdata(String): the pointdata of the square
+            screen(String): where the user wants to display
+            event(Event): user's event
+        Returns:
+            void
+        """
+        # Draw the bg square
+        pygame.draw.rect(screen, self.bg_colour, self.dim)
+        # Get the font and display the point data
+        number_font = pygame.font.Font('material/number.ttf', message_size)
+        text = number_font.render(pointdata, True, RGB[str(pointdata)])
+        # Centralise the point data
+        tw, th = text.get_size()
+        tx = self.dim[0] + self.dim[2] / 2 - tw / 2
+        ty = self.dim[1] + self.dim[3] / 2 - th / 2
+        screen.blit(text, (tx, ty))
 
     def draw_button(self, screen):
         """
