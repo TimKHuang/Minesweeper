@@ -35,7 +35,16 @@ class GUI:
         screen = pygame.display.set_mode((self.width, self.height))
         self.screen = screen
 
-    def initialise(self):
+    def get_board_size(self, event):
+        """
+        This function is used initialise the game
+        And get the board size of the game
+        Args:
+            event:
+
+        Returns:
+
+        """
         # Initialise the game
         pygame.init()
 
@@ -53,16 +62,42 @@ class GUI:
             (self.width // 2 - button_width // 2, (self.height - all_button_height) // 2, button_width, button_height),
             RGB["PALE_GREEN"], "Beginner", RGB["WHITE"], font_size)
         beginner_button.draw_button(self.screen)
+        # print("b: ", end="")
+        # print(beginner_button.dim)
+        # print(beginner_button.message)
         intermediate_button = Button((self.width // 2 - button_width // 2, (self.height - all_button_height) // 2 + 100,
                                       button_width, button_height),
                                      RGB["PALE_GREEN"], "Intermediate", RGB["WHITE"], font_size)
         intermediate_button.draw_button(self.screen)
+        # print("i: ", end="")
+        # print(intermediate_button.dim)
         customise_button = Button((self.width // 2 - button_width // 2, (self.height - all_button_height) // 2 + 200,
                                    button_width, button_height),
                                   RGB["PALE_GREEN"], "Customise", RGB["WHITE"], font_size)
         customise_button.draw_button(self.screen)
+        # print("c: ", end="")
+        # print(customise_button.dim)
         # Update the screen the first time
         pygame.display.flip()
+
+        # Get the game level
+        while True:
+            if beginner_button.update_button(event, self.screen):
+                pygame.display.update()
+                # print(event.pos)
+                board_size = beginner_button.update_button(event, self.screen)
+                return board_size
+                break
+            elif intermediate_button.update_button(event, self.screen):
+                pygame.display.update()
+                # print(event.pos)
+                board_size = intermediate_button.update_button(event, self.screen)
+                return board_size
+            else:
+                pygame.display.update()
+                board_size = customise_button.update_button(event, self.screen)
+                # print(event.pos)
+                return board_size
 
     def draw(self, board):
         """
@@ -104,6 +139,13 @@ class GUI:
 
             # Choose the buttons
 
+    def run(self):
+        """
+        A function runs the game
+        Returns:
+
+        """
+
 
 #
 # while True:
@@ -127,9 +169,15 @@ class GUI:
 
 def test():
     view = GUI()
-    GUI.initialise(view)
     while True:
-        view.detect_event()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if view.get_board_size(event):
+                size = view.get_board_size(event)
+                print(size)
+            # if event.type == pygame.MOUSEMOTION:
+            #     print(event.pos)
 
 
 if __name__ == '__main__':
