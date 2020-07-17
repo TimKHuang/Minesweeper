@@ -9,11 +9,11 @@
 """
 import pygame
 
-from src.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD
+from src.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD, BOARD_DIM
 
 
 class Button:
-    def __init__(self, dim, bg_colour, message=None, message_colour=RGB["WHITE"], message_size=30):
+    def __init__(self, dim, bg_colour, message, message_colour=RGB["WHITE"], message_size=30):
         """
         This function is used to initialise a button with a given message
         The message will be located at the centre of the button
@@ -23,42 +23,9 @@ class Button:
         """
         self.bg_colour = bg_colour
         self.dim = dim
-        if message is not None:
-            self.message = message
-            self.message_size = message_size
-            self.message_colour = message_colour
-
-    def draw_square(self, screen):
-        """
-        This function is used to draw the squares for the board
-        Args:
-            screen(String): where the user wants to display the square
-        Returns:
-            void
-        """
-        pygame.draw.rect(screen, self.bg_colour, self.dim)
-
-    def update_square(self, screen, event, pointdata, message_size=10):
-        """
-        This function is used to update the selected square
-        Args:
-            message_size:
-            pointdata(String): the pointdata of the square
-            screen(String): where the user wants to display
-            event(Event): user's event
-        Returns:
-            void
-        """
-        # Draw the bg square
-        pygame.draw.rect(screen, self.bg_colour, self.dim)
-        # Get the font and display the point data
-        number_font = pygame.font.Font('material/number.ttf', message_size)
-        text = number_font.render(pointdata, True, RGB[str(pointdata)])
-        # Centralise the point data
-        tw, th = text.get_size()
-        tx = self.dim[0] + self.dim[2] / 2 - tw / 2
-        ty = self.dim[1] + self.dim[3] / 2 - th / 2
-        screen.blit(text, (tx, ty))
+        self.message = message
+        self.message_size = message_size
+        self.message_colour = message_colour
 
     def draw_button(self, screen):
         """
@@ -88,7 +55,7 @@ class Button:
             void
         """
         if self.within_bound(pos):
-            button = Button(self.dim, self.message, RGB["HAZE"], self.message_colour, self.message_size)
+            button = Button(self.dim, RGB["HAZE"], self.message, self.message_colour, self.message_size)
             button.draw_button(screen)
             pygame.display.update()
 
@@ -101,11 +68,12 @@ class Button:
             screen(String): this determines where the updates would happen
 
         Returns:
-            void
+            message(String): the message of the button
         """
         if self.within_bound(pos):
             self.draw_button(screen)
             pygame.display.update()
+            return self.message
 
     def within_bound(self, pos):
         """
@@ -132,11 +100,10 @@ class Button:
         """
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.is_down(event.pos, screen)
-        if event.type == pygame.MOUSEBUTTONUP:
-            self.is_up(event.pos, screen)
-            return self.get_board_size()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            return self.get_board_size(self.is_up(event.pos, screen))
 
-    def get_board_size(self):
+    def get_board_size(message):
         """
         This function is used to ask user to choose the board's size
         # Args:
@@ -145,11 +112,9 @@ class Button:
         Returns:
             board_size(dictionary): This contains the dimension of the board
         """
-        board = {}
-        if self.message == GAME_LEVEL["B"]:
-            return board
-        elif self.message == GAME_LEVEL["I"]:
-            board = INTERMEDIATE_BOARD
+        if message == GAME_LEVEL["B"]:
+            return BOARD_DIM
+        if message == GAME_LEVEL["I"]:
+            return INTERMEDIATE_BOARD
         else:
             pass
-        return board
