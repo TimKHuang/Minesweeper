@@ -234,16 +234,16 @@ def input(board):
         if event.type == pygame.QUIT:
             raise SystemExit
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            user_move["POS"] = _get_board_coordinates(event.pos, board)
-            user_move["OPEN"] = True
-            user_move["FLAG"] = False
+            user_move["flag"] = False
+            user_move["x"] = _get_board_coordinates(event.pos, board)[0]
+            user_move["y"] = _get_board_coordinates(event.pos, board)[1]
             return user_move
         elif event.type == pygame and event.button == 3:
-            user_move["POS"] = _get_board_coordinates(event.pos, board)
-            user_move["OPEN"] = False
             user_move["FLAG"] = True
+            user_move["x"] = _get_board_coordinates(event.pos, board)[0]
+            user_move["y"] = _get_board_coordinates(event.pos, board)[1]
             return user_move
-        
+
 # To be added
 #
 # while True:
@@ -260,11 +260,12 @@ def input(board):
 #         customise_button.update_button(event, window)
 
 
-# The section below is for test purposes
-
-def test():
-    pass
-
-
-if __name__ == '__main__':
-    test()
+# # The section below is for test purposes
+#
+# def test():
+#     from src.Board import Board
+#
+#
+#
+# if __name__ == '__main__':
+#     test()
