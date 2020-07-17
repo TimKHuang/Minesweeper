@@ -11,7 +11,6 @@ import pygame
 
 from src.constants import RGB
 from src.Button import Button
-from src.View import View
 
 CELL_WIDTH = 20
 CELL_HEIGHT = 20
