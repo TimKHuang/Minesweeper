@@ -1,34 +1,136 @@
-def fail(screen, event):
-    """
-    Deal with the situation when game fails
-    Args:
-        event(Event): user's event
-        screen(String): the screen to display chanegs
-    Returns:
-        continune(boolean): True is start. False otherwise
-    """
-    screen.fill(RGB["WHITE"])
-    (bx, by, bw, bh) = (BOARD_WIDTH / 4, BOARD_HEIGHT / 4, BOARD_WIDTH / 2, BOARD_HEIGHT / 6)
-    pygame.draw.rect(screen, RGB["PALE_GREEN"], (bx, by, bw, bh))
-    # Get the font
-    font = pygame.font.Font('material/Trinity.ttf', DEMAND_SIZE)
-    text = font.render("You've met a bomb", True, RGB["WHITE"])
-    tw, th = text.get_size()
-    # Centralise the text
-    tx = bx + bw / 2 - tw / 2
-    ty = by + bh / 2 - th / 2
-    screen.blit(text, (tx, ty))
+# -*- coding:utf-8 -*-
+"""
+@author: victorvv
+@contact: wengvictor5@gmail.com
+@software: PyCharm
+@file: Button.py
+@time: 2020/7/15 13:11
+@description: This file creates button for UI
+"""
+import pygame
 
-    # Create two buttons
-    restart_button = Button((BOARD_WIDTH / 4, BOARD_HEIGHT / 2, BOARD_WIDTH / 3, BOARD_HEIGHT / 10), RGB["PALE_GREEN"],
-                            "RESTART", RGB["WHITE"], MESSAGE_SIZE)
-    quit_button = Button((BOARD_WIDTH * 2 / 3, BOARD_HEIGHT / 2, BOARD_WIDTH / 3, BOARD_HEIGHT / 10), RGB["PALE_GREEN"],
-                            "QUIT", RGB["WHITE"], MESSAGE_SIZE)
-    # Get user's choice
-    while True:
-        if restart_button.is_up(event.pos, screen):
+from src.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD, BOARD_DIM
+
+
+class Button:
+    def __init__(self, dim, bg_colour, message, message_colour=RGB["WHITE"], message_size=30):
+        """
+        This function is used to initialise a button with a given message
+        The message will be located at the centre of the button
+        Args:
+            bg_colour(Tuple of 3): the bg color of button
+            dim (Tuple of 4): contains where the button is, and the size of the button
+        """
+        self.bg_colour = bg_colour
+        self.dim = dim
+        self.message = message
+        self.message_size = message_size
+        self.message_colour = message_colour
+
+    def draw_button(self, screen):
+        """
+        This function is used to draw the button on the given screen
+        Args:
+            screen(String): where the user wants to display the button
+        Returns:
+            void
+        """
+        pygame.draw.rect(screen, self.bg_colour, self.dim)
+        # Get the font
+        font = pygame.font.Font('material/Trinity.ttf', self.message_size)
+        text = font.render(self.message, True, self.message_colour)
+        tw, th = text.get_size()
+        tx = self.dim[0] + self.dim[2] / 2 - tw / 2
+        ty = self.dim[1] + self.dim[3] / 2 - th / 2
+        screen.blit(text, (tx, ty))
+
+    def is_down(self, pos, screen):
+        """
+        This function is used to detect if a mousebutton is  down
+        And update the display when it is down
+        Args:
+            pos(Tuple of 2): determines the x, y coordinate of the event
+            screen(String): determines the screen to display the updates
+        Returns:
+            void
+        """
+        if self.within_bound(pos):
+            button = Button(self.dim, RGB["HAZE"], self.message, self.message_colour, self.message_size)
+            button.draw_button(screen)
             pygame.display.update()
-            return restart_button.get_choice(event, screen)
-        if quit_button.is_up(event.pos, screen):
+
+    def is_up(self, pos, screen):
+        """
+        This function is used to detect if a mousebutton is up
+        And update the display when it is up
+        Args:
+            pos(Tuple of 2): this determines the x, y coordinates of the event
+            screen(String): this determines where the updates would happen
+
+        Returns:
+            message(String): the message of the button
+        """
+        if self.within_bound(pos):
+            self.draw_button(screen)
             pygame.display.update()
-            return quit_button.get_choice(event, screen)
+            return self.message
+
+    def within_bound(self, pos):
+        """
+        This function is used to check if an event is happened within boundaries
+        Args:
+            pos（Tuple of 2): this determines the x, y coordinates of the event
+        Returns:
+            True if it within the bound
+            False, otherwise
+        """
+        x, y = pos
+        if self.dim[0] <= x <= self.dim[0] + self.dim[2] and self.dim[1] <= y <= self.dim[1] + self.dim[3]:
+            return True
+        return False
+
+    def update_button(self, event, screen):
+        """
+        This function updates the button when it is clicked
+        Args:
+            event(Event): This is user's event
+            screen(String): This determines the screen to be displayed
+        Returns:
+            board_size(Dictionary): This determines the dimension of the board
+        """
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.is_down(event.pos, screen)
+        elif event.type == pygame.MOUSEBUTTONUP:
+            return self.get_board_size(self.is_up(event.pos, screen))
+
+    def get_board_size(self, message):
+        """
+        This function is used to ask user to choose the board's size
+        # Args:
+        #     button_type(String): There are 3 types of board
+        #                          Beginner, Intermediate and Customise
+        Returns:
+            board_size(dictionary): This contains the dimension of the board
+        """
+        if message == GAME_LEVEL["B"]:
+            return BOARD_DIM
+        if message == GAME_LEVEL["I"]:
+            return INTERMEDIATE_BOARD
+        else:
+            pass
+
+    def get_choice(self, event, screen):
+        """
+        This function is used to get if user wants to restart the game or quit the game
+        Args:
+            event(Event): user's event
+            screen(String): the screen to display changes
+        Returns:
+            True if continue. False otherwise.
+        """
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.is_down(event.pos, screen)
+        if event.type == pygame.MOUSEBUTTONUP:
+            message = self.is_up(event.pos, screen)
+            return message == "RESTART"
+
