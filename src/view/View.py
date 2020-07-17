@@ -3,15 +3,12 @@
 @author: timkhuang
 @contact: timkhuang@icloud.com
 @software: PyCharm
-@file: View.py.py
+@file: View.py
 @time: 06/07/2020 21:24
 @description: This is the abstract class for all the rendering/visualisation of the game/board.
 """
-
-
 from abc import ABC, abstractmethod
 
-from .TerminalView.TerminalView import TerminalView
 
 class View(ABC):
     """
@@ -75,16 +72,4 @@ class View(ABC):
         self.draw(board)
         return self.input()
 
-    @staticmethod
-    def get_view(mode):
-        """
-        Can be seen as a factory of different views.
-        Available views are: "terminal"
-        Args:
-            mode (str): The chosen running mode
-        Returns:
-            view (View): instance of a particular view.
-        """
-        if mode == "terminal":
-            return TerminalView()
-        raise Exception("Mode does not exists.")
+

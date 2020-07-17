@@ -7,9 +7,8 @@
 @time: 07/07/2020 09:38
 @description: Provides a terminal view showing the board with characters.
 """
-
-from src.View import View
-from src.constants import COLOUR
+from src.view.View import View
+from src.view.assets.datas.constants import COLOUR
 
 
 class TerminalView(View):

@@ -8,7 +8,7 @@
 @description: This can be seen as a launcher of the game or controller.
 """
 from src.Board import Board
-from src.View.View import View
+from src.view.ViewFactory import ViewFactory
 
 
 class Minesweeper:
@@ -19,7 +19,7 @@ class Minesweeper:
         Args:
             mode (str): The string of the mode. default "terminal".
         """
-        self.view = View().get_view(mode)
+        self.view = ViewFactory.get_view(mode)
 
     def one_turn(self):
         """
