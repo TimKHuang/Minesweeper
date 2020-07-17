@@ -19,6 +19,9 @@ BUTTON_WIDTH = 200
 BUTTON_HEIGHT = 50
 BOARD_WIDTH = 400
 BOARD_HEIGHT = 600
+MESSAGE_SIZE = BOARD_HEIGHT // BOARD_WIDTH * 20
+NUMBER_SIZE = CELL_HEIGHT // CELL_WIDTH * 10
+DEMAND_SIZE = BOARD_HEIGHT // BOARD_WIDTH * 30
 
 
 def get_board_size(screen, event):
@@ -36,20 +39,19 @@ def get_board_size(screen, event):
     pygame.display.set_caption('MineSweeper')
 
     # Dimension of button
-    font_size = 20
     all_button_height = 350
     # Set up the option buttons
     beginner_button = Button(
-        (BOARD_WIDTH// 2 - BUTTON_WIDTH // 2, (BOARD_HEIGHT - all_button_height) // 2, BUTTON_WIDTH, BUTTON_HEIGHT),
-        RGB["PALE_GREEN"], "Beginner", RGB["WHITE"], font_size)
+        (BOARD_WIDTH // 2 - BUTTON_WIDTH // 2, (BOARD_HEIGHT - all_button_height) // 2, BUTTON_WIDTH, BUTTON_HEIGHT),
+        RGB["PALE_GREEN"], "Beginner", RGB["WHITE"], MESSAGE_SIZE)
     beginner_button.draw_button(screen)
     intermediate_button = Button((BOARD_WIDTH // 2 - BUTTON_WIDTH // 2, (BOARD_HEIGHT - all_button_height) // 2 + 100,
                                   BUTTON_WIDTH, BUTTON_HEIGHT),
-                                 RGB["PALE_GREEN"], "Intermediate", RGB["WHITE"], font_size)
+                                 RGB["PALE_GREEN"], "Intermediate", RGB["WHITE"], MESSAGE_SIZE)
     intermediate_button.draw_button(screen)
     customise_button = Button((BOARD_WIDTH // 2 - BUTTON_WIDTH // 2, (BOARD_HEIGHT - all_button_height) // 2 + 200,
                                BUTTON_WIDTH, BUTTON_HEIGHT),
-                              RGB["PALE_GREEN"], "Customise", RGB["WHITE"], font_size)
+                              RGB["PALE_GREEN"], "Customise", RGB["WHITE"], MESSAGE_SIZE)
     customise_button.draw_button(screen)
     # First time set up the screen
     pygame.display.flip()
@@ -98,12 +100,12 @@ def draw(screen, board):
                     screen.blit(bomb, (x * CELL_WIDTH + 5, y * CELL_HEIGHT + 5))
                     continue
                 # Draw the point out
-                bx = x * CELL_WIDTH -5
+                bx = x * CELL_WIDTH - 5
                 by = y * CELL_HEIGHT - 5
                 bw = CELL_WIDTH - 5
                 bh = CELL_HEIGHT - 5
                 pygame.draw.rect(screen, RGB["HAZE"], (bx, by, bw, bh), 5)
-                number_font = pygame.font.Font('material/number.ttf', 10)
+                number_font = pygame.font.Font('material/number.ttf', NUMBER_SIZE)
                 number = number_font.render(point, True, RGB[str(point)])
                 tw, th = number.get_size()
                 # Centralise the number
@@ -156,6 +158,78 @@ class UserPlayer:
                 return self.user_move
 
 
+def fail(screen, event):
+    """
+    Deal with the situation when game fails
+    Args:
+        event(Event): user's event
+        screen(String): the screen to display chanegs
+    Returns:
+        continune(boolean): True is start. False otherwise
+    """
+    screen.fill(RGB["WHITE"])
+    (bx, by, bw, bh) = (BOARD_WIDTH / 4, BOARD_HEIGHT / 4, BOARD_WIDTH / 2, BOARD_HEIGHT / 6)
+    pygame.draw.rect(screen, RGB["PALE_GREEN"], (bx, by, bw, bh))
+    # Get the font
+    font = pygame.font.Font('material/Trinity.ttf', DEMAND_SIZE)
+    text = font.render("You've met a bomb", True, RGB["WHITE"])
+    tw, th = text.get_size()
+    # Centralise the text
+    tx = bx + bw / 2 - tw / 2
+    ty = by + bh / 2 - th / 2
+    screen.blit(text, (tx, ty))
+
+    # Create two buttons
+    restart_button = Button((BOARD_WIDTH / 4, BOARD_HEIGHT / 2, BOARD_WIDTH / 3, BOARD_HEIGHT / 10), RGB["PALE_GREEN"],
+                            "RESTART", RGB["WHITE"], MESSAGE_SIZE)
+    quit_button = Button((BOARD_WIDTH * 2 / 3, BOARD_HEIGHT / 2, BOARD_WIDTH / 3, BOARD_HEIGHT / 10), RGB["PALE_GREEN"],
+                         "QUIT", RGB["WHITE"], MESSAGE_SIZE)
+    # Get user's choice
+    while True:
+        if restart_button.is_up(event.pos, screen):
+            pygame.display.update()
+            return restart_button.get_choice(event, screen)
+        if quit_button.is_up(event.pos, screen):
+            pygame.display.update()
+            return quit_button.get_choice(event, screen)
+
+
+def win(screen, event):
+    """
+    Deal with the situation when game wins
+    Args:
+        event(Event): user's event
+        screen(String): the screen to display chanegs
+    Returns:
+        continune(boolean): True is start. False otherwise
+    """
+    screen.fill(RGB["WHITE"])
+    (bx, by, bw, bh) = (BOARD_WIDTH / 4, BOARD_HEIGHT / 4, BOARD_WIDTH / 2, BOARD_HEIGHT / 6)
+    pygame.draw.rect(screen, RGB["PALE_GREEN"], (bx, by, bw, bh))
+    # Get the font
+    font = pygame.font.Font('material/Trinity.ttf', DEMAND_SIZE)
+    text = font.render("Wow! Excellent", True, RGB["WHITE"])
+    tw, th = text.get_size()
+    # Centralise the text
+    tx = bx + bw / 2 - tw / 2
+    ty = by + bh / 2 - th / 2
+    screen.blit(text, (tx, ty))
+
+    # Create two buttons
+    restart_button = Button((BOARD_WIDTH / 4, BOARD_HEIGHT / 2, BOARD_WIDTH / 3, BOARD_HEIGHT / 10), RGB["PALE_GREEN"],
+                            "RESTART", RGB["WHITE"], MESSAGE_SIZE)
+    quit_button = Button((BOARD_WIDTH * 2 / 3, BOARD_HEIGHT / 2, BOARD_WIDTH / 3, BOARD_HEIGHT / 10), RGB["PALE_GREEN"],
+                         "QUIT", RGB["WHITE"], MESSAGE_SIZE)
+    # Get user's choice
+    while True:
+        if restart_button.is_up(event.pos, screen):
+            pygame.display.update()
+            return restart_button.get_choice(event, screen)
+        if quit_button.is_up(event.pos, screen):
+            pygame.display.update()
+            return quit_button.get_choice(event, screen)
+
+
 # To be added
 #
 # while True:
@@ -176,6 +250,7 @@ class UserPlayer:
 
 def test():
     pass
+
 
 if __name__ == '__main__':
     test()
