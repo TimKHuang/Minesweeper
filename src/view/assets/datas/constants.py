@@ -7,6 +7,10 @@
 @time: 2020/7/9 下午6:45
 @description: This file contains datas value for minesweeper
 """
+BOARD_DIM = {"MINE_COUNT": 40,
+             "BOARD_WIDTH": 16,
+             "BOARD_HEIGHT": None
+             }
 
 # The dictionary below denotes the colour for each square's value
 COLOUR = {"B": "\033[1m",
