@@ -33,11 +33,7 @@ def get_board_size(screen, event):
         event(Event): this is user's action
     Returns:
     game_level(dictionary): This determines the dimension of the board
-        """
-    # Set up window and background
-    screen.fill(RGB["WHITE"])
-    pygame.display.set_caption('MineSweeper')
-
+    """
     # Dimension of button
     all_button_height = 350
     # Set up the option buttons
@@ -131,33 +127,6 @@ def draw(screen, board):
     pygame.display.update()
 
 
-class UserPlayer:
-    """
-    A simple user player that reads moves
-    """
-    user_move = {
-        "POS": (),
-        "OPEN": False,
-        "FLAG": False
-    }
-
-    def choose_action(self, board):
-        while True:
-            event = pygame.event.wait()
-            if event.type == pygame.QUIT:
-                raise SystemExit
-            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                self.user_move["POS"] = event.pos
-                self.user_move["OPEN"] = True
-                self.user_move["FLAG"] = False
-                return self.user_move
-            elif event.type == pygame and event.button == 3:
-                self.user_move["POS"] = event.pos
-                self.user_move["OPEN"] = False
-                self.user_move["FLAG"] = True
-                return self.user_move
-
-
 def fail(screen, event):
     """
     Deal with the situation when game fails
@@ -168,7 +137,7 @@ def fail(screen, event):
         continune(boolean): True is start. False otherwise
     """
     screen.fill(RGB["WHITE"])
-    (bx, by, bw, bh) = (BOARD_WIDTH / 4, BOARD_HEIGHT / 4, BOARD_WIDTH / 2, BOARD_HEIGHT / 6)
+    bx, by, bw, bh = (BOARD_WIDTH / 4, BOARD_HEIGHT / 4, BOARD_WIDTH / 2, BOARD_HEIGHT / 6)
     pygame.draw.rect(screen, RGB["PALE_GREEN"], (bx, by, bw, bh))
     # Get the font
     font = pygame.font.Font('material/Trinity.ttf', DEMAND_SIZE)
@@ -204,7 +173,7 @@ def win(screen, event):
         continune(boolean): True is start. False otherwise
     """
     screen.fill(RGB["WHITE"])
-    (bx, by, bw, bh) = (BOARD_WIDTH / 4, BOARD_HEIGHT / 4, BOARD_WIDTH / 2, BOARD_HEIGHT / 6)
+    bx, by, bw, bh = (BOARD_WIDTH / 4, BOARD_HEIGHT / 4, BOARD_WIDTH / 2, BOARD_HEIGHT / 6)
     pygame.draw.rect(screen, RGB["PALE_GREEN"], (bx, by, bw, bh))
     # Get the font
     font = pygame.font.Font('material/Trinity.ttf', DEMAND_SIZE)
@@ -230,6 +199,51 @@ def win(screen, event):
             return quit_button.get_choice(event, screen)
 
 
+def _get_board_coordinates(pos, board):
+    """
+    This function is used to return the x, y coordinate of the updated point on the board
+    Args:
+        pos(int, int): event's pos
+        board(matrix of PointData): the output board
+    Returns:
+        coordinates(int, int): the x, y value of the point on the board
+    """
+    x, y = pos
+    rows = len(board)
+    cols = len(board[0])
+    for r in range(rows):
+        for c in range(cols):
+            bx = c * CELL_WIDTH - 5
+            by = r * CELL_HEIGHT - 5
+            bw = CELL_WIDTH - 5
+            bh = CELL_HEIGHT - 5
+            if bx <= x <= bx + bw and by <= y <= by + bh:
+                return c, r
+
+
+def input(board):
+    """
+    This function return user's move
+    Returns:
+        user_move{"POS": (int, int), "OPEN": boolean, "FLAG": bool}
+    """
+    user_move ={}
+
+    while True:
+        event = pygame.event.wait()
+        if event.type == pygame.QUIT:
+            raise SystemExit
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            user_move["POS"] = _get_board_coordinates(event.pos, board)
+            user_move["OPEN"] = True
+            user_move["FLAG"] = False
+            return user_move
+        elif event.type == pygame and event.button == 3:
+            user_move["POS"] = _get_board_coordinates(event.pos, board)
+            user_move["OPEN"] = False
+            user_move["FLAG"] = True
+            return user_move
+        
 # To be added
 #
 # while True:
