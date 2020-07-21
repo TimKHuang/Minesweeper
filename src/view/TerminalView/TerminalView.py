@@ -23,6 +23,7 @@ class TerminalView(View):
     """
 
     def __init__(self):
+        super().__init__()
         self.rows = -1
         self.cols = -1
 

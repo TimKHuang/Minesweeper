@@ -8,6 +8,7 @@
 @description: This is the abstract class for all the rendering/visualisation of the game/board.
 """
 from abc import ABC, abstractmethod
+import timeit
 
 
 class View(ABC):
@@ -15,6 +16,8 @@ class View(ABC):
     An Abstract class for all kinds of GUI.
     Provide a run() function to draw the GUI and get the user input.
     """
+    def __init__(self):
+        self.time = None
 
     @abstractmethod
     def draw(self, board):
@@ -70,9 +73,19 @@ class View(ABC):
         Returns:
             result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
+        if self.time is None:
+            self.time = timeit.default_timer()
         self.draw(board)
         if ai:
             return ai.make_decision(board)
         return self.input()
 
-
+    def time_running(self):
+        """
+        get how long the game has run. The Board size part is not included.
+        Returns:
+            time (int): the time in seconds
+        """
+        if self.time is None:
+            return 0
+        return timeit.default_timer() - self.time
