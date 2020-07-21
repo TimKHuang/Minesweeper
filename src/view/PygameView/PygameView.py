@@ -9,14 +9,14 @@
 """
 import pygame
 
-from src.view.assets.datas.constants import RGB
-from src.view.PygameView.Button import Button
-from src.view import View
+from src.View.assets.datas.constants import RGB
+from src.View.PygameView.Button import Button
+from src.View.View import View
 
 
 class PygameView(View):
     """
-    This class is used to generate the GUI view
+    This class is used to generate the GUI View
     This class is built by PygameView
     """
 
@@ -29,12 +29,14 @@ class PygameView(View):
         """
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.board_rows = None
+        self.board_cols = None
         # Set up the screen
         self.screen = pygame.display.set_mode((screen_width, screen_height), flags=pygame.RESIZABLE)
         self.screen.fill(RGB["WHITE"])
         pygame.display.set_caption("Minesweeper")
         # Generate the event
-        self.event = pygame.event.wait()
+        self.event = None
 
     def get_board_size(self):
         """
@@ -49,7 +51,6 @@ class PygameView(View):
         BUTTON_HEIGHT = ratio * 50
         MESSAGE_SIZE = ratio * 20
         all_button_height = BUTTON_HEIGHT * 3 + 200
-
         # Set up the option buttons
         # Set up beginner button
         beginner_button = Button(
@@ -85,7 +86,7 @@ class PygameView(View):
                 pygame.display.update()
                 return intermediate_button.update_button(self.event, self.screen)
 
-            else:
+            elif customise_button.update_button(self.event, self.screen):
                 pygame.display.update()
                 return customise_button.update_button(self.event, self.screen)
 
@@ -99,33 +100,46 @@ class PygameView(View):
         """
         # Dimension of cell
         ratio = self.screen_height // self.screen_width
-        CELL_WIDTH = ratio * 20
-        CELL_HEIGHT = ratio * 20
-        NUMBER_SIZE = CELL_HEIGHT // CELL_WIDTH * 10 * ratio
+        CELL_WIDTH = ratio * 30
+        CELL_HEIGHT = ratio * 30
+        NUMBER_SIZE = 10 * ratio
+        LINE_WIDTH = ratio
 
+        # pygame.display.set_caption("Minesweeper:" + str(time.time())
         # Get the dimension of the board
-        rows = len(board)
-        cols = len(board[0])
-        for y in range(rows):
-            # Draw the y axis
-            pygame.draw.line(self.screen, RGB["CYANINE"], (0, CELL_HEIGHT * y), (self.screen_width, CELL_HEIGHT * y), 5)
-            for x in range(cols):
-                # Draw the x axis
-                pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x, 0), (CELL_WIDTH * x, self.screen_height), 5)
+        self.board_rows = len(board)
+        self.board_cols = len(board[0])
+        max_width = self.board_cols * CELL_WIDTH
+        max_height = self.board_rows * CELL_HEIGHT
+        startpos_x = (self.screen_width - max_width) // 2
+        startpos_y = (self.screen_height - max_height) // 2
+
+        # Draw the board out
+        for y in range(self.board_rows):
+            # Draw the x axis
+            pygame.draw.line(self.screen, RGB["CYANINE"], (startpos_x, CELL_HEIGHT * y + startpos_y),
+                             (max_width, CELL_HEIGHT * y + startpos_y),
+                             LINE_WIDTH)
+            for x in range(self.board_cols):
+                # Draw the y axis
+                pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x + startpos_x, startpos_y),
+                                 (CELL_WIDTH * x + startpos_x, max_height),
+                                 LINE_WIDTH)
                 point = board[y][x]
                 if point.is_opened:
                     # Load the image of mine to the screen
                     if point.is_bomb:
                         bomb = pygame.image.load('src/View/assets/images/mine.jpg')
                         bomb = pygame.transform.smoothscale(bomb, (CELL_WIDTH, CELL_HEIGHT))
-                        self.screen.blit(bomb, (x * CELL_WIDTH + 5, y * CELL_HEIGHT + 5))
+                        self.screen.blit(bomb, (x * CELL_WIDTH + startpos_x, y * CELL_HEIGHT + startpos_y))
                         continue
+
                     # Draw the point out
-                    bx = x * CELL_WIDTH - 5
-                    by = y * CELL_HEIGHT - 5
-                    bw = CELL_WIDTH - 5
-                    bh = CELL_HEIGHT - 5
-                    pygame.draw.rect(self.screen, RGB["HAZE"], (bx, by, bw, bh), 5)
+                    bx = x * CELL_WIDTH + startpos_x
+                    by = y * CELL_HEIGHT + startpos_y
+                    bw = CELL_WIDTH - 1 * ratio
+                    bh = CELL_HEIGHT - 1 * ratio
+                    pygame.draw.rect(self.screen, RGB["HAZE"], (bx, by, bw, bh))
                     number_font = pygame.font.Font('src/View/assets/fonts/number.ttf', NUMBER_SIZE)
                     number = number_font.render(point, True, RGB[str(point)])
                     tw, th = number.get_size()
@@ -138,19 +152,18 @@ class PygameView(View):
                     # Load the image of flag to the screen
                     flag = pygame.image.load('src/View/assets/images/flag.png')
                     flag = pygame.transform.smoothscale(flag, (CELL_WIDTH, CELL_HEIGHT))
-                    self.screen.blit(flag, (x * CELL_WIDTH + 5, y * CELL_HEIGHT + 5))
+                    self.screen.blit(flag, (x * CELL_WIDTH + startpos_x, y * CELL_HEIGHT + startpos_y))
                     continue
 
                 # Draw squares for unopened point on the board
-                bx = x * CELL_WIDTH - 5
-                by = y * CELL_HEIGHT - 5
-                bw = CELL_WIDTH - 5
-                bh = CELL_HEIGHT - 5
+                bx = x * CELL_WIDTH + startpos_x
+                by = y * CELL_HEIGHT + startpos_y
+                bw = CELL_WIDTH - 1 * ratio
+                bh = CELL_HEIGHT - 1 * ratio
                 pygame.draw.rect(self.screen, RGB["PALE_GREEN"], (bx, by, bw, bh))
 
         # Update the screen after changing
         pygame.display.update()
-
 
     def fail(self):
         """
@@ -176,10 +189,14 @@ class PygameView(View):
         self.screen.blit(text, (tx, ty))
 
         # Create two buttons
-        restart_button = Button((self.screen_width / 4, self.screen_height / 2, self.screen_width / 3, self.screen_height / 10), RGB["PALE_GREEN"],
-                                "RESTART", RGB["WHITE"], MESSAGE_SIZE)
-        quit_button = Button((self.screen_width * 2 / 3, self.screen_heights / 2, self.screen_width / 3, self.screen_height / 10), RGB["PALE_GREEN"],
-                            "QUIT", RGB["WHITE"], MESSAGE_SIZE)
+        restart_button = Button(
+            (self.screen_width / 4, self.screen_height / 2, self.screen_width / 3, self.screen_height / 10),
+            RGB["PALE_GREEN"],
+            "RESTART", RGB["WHITE"], MESSAGE_SIZE)
+        quit_button = Button(
+            (self.screen_width * 2 / 3, self.screen_height / 2, self.screen_width / 3, self.screen_height / 10),
+            RGB["PALE_GREEN"],
+            "QUIT", RGB["WHITE"], MESSAGE_SIZE)
         # Get user's choice
         while True:
             if restart_button.is_up(self.event.pos, self.screen):
@@ -214,10 +231,14 @@ class PygameView(View):
         self.screen.blit(text, (tx, ty))
 
         # Create two buttons
-        restart_button = Button((self.screen_width / 4, self.screen_height / 2, self.screen_width / 3, self.screen_height / 10), RGB["PALE_GREEN"],
-                                "RESTART", RGB["WHITE"], MESSAGE_SIZE)
-        quit_button = Button((self.screen_width * 2 / 3, self.screen_height / 2, self.screen_width / 3, self.screen_height / 10), RGB["PALE_GREEN"],
-                            "QUIT", RGB["WHITE"], MESSAGE_SIZE)
+        restart_button = Button(
+            (self.screen_width / 4, self.screen_height / 2, self.screen_width / 3, self.screen_height / 10),
+            RGB["PALE_GREEN"],
+            "RESTART", RGB["WHITE"], MESSAGE_SIZE)
+        quit_button = Button(
+            (self.screen_width * 2 / 3, self.screen_height / 2, self.screen_width / 3, self.screen_height / 10),
+            RGB["PALE_GREEN"],
+            "QUIT", RGB["WHITE"], MESSAGE_SIZE)
         # Get user's choice
         while True:
             if restart_button.is_up(self.event.pos, self.screen):
@@ -227,8 +248,7 @@ class PygameView(View):
                 pygame.display.update()
                 return quit_button.get_choice(self.event, self.screen)
 
-
-    def _get_board_coordinates(self, pos, board):
+    def _get_board_coordinates(self, pos):
         """
         This function is used to return the x, y coordinate of the updated point on the board
         Args:
@@ -239,22 +259,30 @@ class PygameView(View):
         """
         # Dimension of cell
         ratio = self.screen_height // self.screen_width
-        CELL_WIDTH = ratio * 20
-        CELL_HEIGHT = ratio * 20
+        CELL_WIDTH = ratio * 30
+        CELL_HEIGHT = ratio * 30
+        max_width = self.board_cols * CELL_WIDTH
+        max_height = self.board_rows * CELL_HEIGHT
+        startpos_x = (self.screen_width - max_width) // 2
+        startpos_y = (self.screen_height - max_height) // 2
 
+        # print(self.board_rows)
+        # print(self.board_cols)
+        print(pos)
         x, y = pos
-        rows = len(board)
-        cols = len(board[0])
-        for r in range(rows):
-            for c in range(cols):
-                bx = c * CELL_WIDTH - 5
-                by = r * CELL_HEIGHT - 5
-                bw = CELL_WIDTH - 5
-                bh = CELL_HEIGHT - 5
+        for r in range(self.board_rows):
+            for c in range(self.board_cols):
+                bx = x * CELL_WIDTH + startpos_x
+                by = y * CELL_HEIGHT + startpos_y
+                bw = CELL_WIDTH - 1 * ratio
+                bh = CELL_HEIGHT - 1 * ratio
                 if bx <= x <= bx + bw and by <= y <= by + bh:
+                    print(r,c)
                     return c, r
+                else:
+                    pass
 
-    def input(self, board):
+    def input(self):
         """
         This function return user's move
         Returns:
@@ -263,18 +291,21 @@ class PygameView(View):
         user_move = {}
 
         while True:
-            event = pygame.event.wait()
-            if event.type == pygame.QUIT:
+            self.event = pygame.event.wait()
+            # print(pygame.event.event_name(self.event.type), end=" ")
+            # print(pygame.event.)
+            if self.event.type == pygame.QUIT:
                 raise SystemExit
-            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            # elif event.type == pygame.VIDEORESIZE:
+            elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 1:
                 user_move["flag"] = False
-                user_move["x"] = self._get_board_coordinates(event.pos, board)[0]
-                user_move["y"] = self._get_board_coordinates(event.pos, board)[1]
+                user_move["x"] = self._get_board_coordinates(self.event.pos)[0]
+                user_move["y"] = self._get_board_coordinates(self.event.pos)[1]
                 return user_move
-            elif event.type == pygame and event.button == 3:
+            elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 3:
                 user_move["flag"] = True
-                user_move["x"] = self._get_board_coordinates(event.pos, board)[0]
-                user_move["y"] = self._get_board_coordinates(event.pos, board)[1]
+                user_move["x"] = self._get_board_coordinates(self.event.pos)[0]
+                user_move["y"] = self._get_board_coordinates(self.event.pos)[1]
                 return user_move
 
 # To be added
@@ -294,11 +325,12 @@ class PygameView(View):
 
 
 # # The section below is for test purposes
-#
-# def test():
-#     from src.Board import Board
-#
-#
-#
-# if __name__ == '__main__':
-#     test()
+
+def test():
+    from src.Board import Board
+    view = PygameView(600, 600)
+    view.run(Board().get_board())
+
+
+if __name__ == '__main__':
+    test()
