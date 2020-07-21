@@ -135,7 +135,6 @@ class PygameView(View):
 
         # During each iteration the prev screen is filled white
         self.screen.fill(RGB["WHITE"])
-        pygame.display.update()
 
         for y in range(self.board_rows):
             # Draw the x axis
