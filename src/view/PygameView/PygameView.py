@@ -137,7 +137,6 @@ class PygameView(View):
         self.screen.fill(RGB["WHITE"])
         pygame.display.update()
 
-        # Draw the board out
         for y in range(self.board_rows):
             # Draw the x axis
             pygame.draw.line(self.screen, RGB["CYANINE"], (startpos_x, CELL_HEIGHT * y + startpos_y),
@@ -148,6 +147,10 @@ class PygameView(View):
                 pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x + startpos_x, startpos_y),
                                  (CELL_WIDTH * x + startpos_x, max_height),
                                  LINE_WIDTH)
+
+        # Draw the board out
+        for y in range(self.board_rows):
+            for x in range(self.board_cols):
                 point = board[y][x]
                 if point.is_opened:
                     # Load the image of mine to the screen
@@ -326,9 +329,8 @@ class PygameView(View):
             coordinates(int, int): the x, y value of the point on the board
         """
         # Dimension of cell
-        ratio = self.screen_height // self.screen_width
-        CELL_WIDTH = ratio * 30
-        CELL_HEIGHT = ratio * 30
+        CELL_WIDTH = 30
+        CELL_HEIGHT = 30
         max_width = (self.board_cols + 1) * CELL_WIDTH
         max_height = (self.board_rows + 1) * CELL_HEIGHT
         startpos_x = (self.screen_width - max_width) // 2
@@ -339,8 +341,8 @@ class PygameView(View):
             for c in range(self.board_cols):
                 bx = c * CELL_WIDTH + startpos_x
                 by = r * CELL_HEIGHT + startpos_y
-                bw = CELL_WIDTH - 2 * ratio
-                bh = CELL_HEIGHT - 2 * ratio
+                bw = CELL_WIDTH - 2
+                bh = CELL_HEIGHT - 2
                 if bx <= x <= bx + bw and by <= y <= by + bh:
                     return c, r
                 else:
