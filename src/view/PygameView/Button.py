@@ -10,8 +10,7 @@
 import pygame
 import os
 
-from src.View.assets.datas.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD
-from src.constants import BOARD_DIM
+from src.view.assets.datas.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD, BEGINNER_BOARD
 
 
 class Button:
@@ -39,13 +38,7 @@ class Button:
         """
         pygame.draw.rect(screen, self.bg_colour, self.dim)
         # Get the font
-        Path1 = 'src'
-        Path2 = 'View'
-        Path3 = 'assets'
-        Path4 = 'fonts'
-        Path5 = 'Trinity.ttf'
-        file = os.path.join(Path1, Path2, Path3, Path4, Path5)
-        font = pygame.font.Font(file, self.message_size)
+        font = pygame.font.Font('view/assets/fonts/Trinity.ttf', self.message_size)
         text = font.render(self.message, True, self.message_colour)
         tw, th = text.get_size()
         tx = self.dim[0] + self.dim[2] / 2 - tw / 2
@@ -122,8 +115,9 @@ class Button:
             board_size(dictionary): This contains the dimension of the board
         """
         if message == GAME_LEVEL["B"]:
-            return BOARD_DIM
+            return BEGINNER_BOARD
         if message == GAME_LEVEL["I"]:
+            print(INTERMEDIATE_BOARD)
             return INTERMEDIATE_BOARD
         else:
             pass
