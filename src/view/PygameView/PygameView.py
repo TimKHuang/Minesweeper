@@ -142,11 +142,11 @@ class PygameView(View):
             pygame.draw.line(self.screen, RGB["CYANINE"], (startpos_x, CELL_HEIGHT * y + startpos_y),
                              (max_width, CELL_HEIGHT * y + startpos_y),
                              LINE_WIDTH)
-            for x in range(self.board_cols):
-                # Draw the y axis
-                pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x + startpos_x, startpos_y),
-                                 (CELL_WIDTH * x + startpos_x, max_height),
-                                 LINE_WIDTH)
+        for x in range(self.board_cols):
+            # Draw the y axis
+            pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x + startpos_x, startpos_y),
+                             (CELL_WIDTH * x + startpos_x, max_height),
+                             LINE_WIDTH)
 
         # Draw the board out
         for y in range(self.board_rows):
@@ -172,7 +172,6 @@ class PygameView(View):
                         else:
                             number_font = pygame.font.Font('view/assets/fonts/number.ttf', NUMBER_SIZE)
                             number = number_font.render(str(point.bomb_around), True, RGB[str(point.bomb_around)])
-                            print("number: ", point.bomb_around)
                             tw, th = number.get_size()
                             # Centralise the number
                             tx = bx + bw / 2 - tw / 2
