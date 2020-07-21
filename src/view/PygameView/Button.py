@@ -8,8 +8,9 @@
 @description: This file creates button for UI
 """
 import pygame
+import os
 
-from src.view.assets.datas.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD
+from src.View.assets.datas.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD
 from src.constants import BOARD_DIM
 
 
@@ -38,7 +39,13 @@ class Button:
         """
         pygame.draw.rect(screen, self.bg_colour, self.dim)
         # Get the font
-        font = pygame.font.Font('src/view/assets/fonts/Trinity.ttf', self.message_size)
+        Path1 = 'src'
+        Path2 = 'View'
+        Path3 = 'assets'
+        Path4 = 'fonts'
+        Path5 = 'Trinity.ttf'
+        file = os.path.join(Path1, Path2, Path3, Path4, Path5)
+        font = pygame.font.Font(file, self.message_size)
         text = font.render(self.message, True, self.message_colour)
         tw, th = text.get_size()
         tx = self.dim[0] + self.dim[2] / 2 - tw / 2
@@ -104,7 +111,8 @@ class Button:
         elif event.type == pygame.MOUSEBUTTONUP:
             return self.get_board_size(self.is_up(event.pos, screen))
 
-    def get_board_size(self, message):
+    @staticmethod
+    def get_board_size(message):
         """
         This function is used to ask user to choose the board's size
         # Args:
