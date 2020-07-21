@@ -37,6 +37,8 @@ class PygameView(View):
         pygame.display.set_caption("Minesweeper")
         # Generate the event
         self.event = None
+        # Initialise Pygame
+        pygame.init()
 
     def get_board_size(self):
         """
@@ -109,22 +111,33 @@ class PygameView(View):
         # Get the dimension of the board
         self.board_rows = len(board)
         self.board_cols = len(board[0])
-        max_width = self.board_cols * CELL_WIDTH
-        max_height = self.board_rows * CELL_HEIGHT
+        max_width = (self.board_cols + 1) * CELL_WIDTH
+        max_height = (self.board_rows + 1) * CELL_HEIGHT
         startpos_x = (self.screen_width - max_width) // 2
         startpos_y = (self.screen_height - max_height) // 2
 
-        # Draw the board out
-        for y in range(self.board_rows):
+        for y in range(self.board_rows + 1):
             # Draw the x axis
             pygame.draw.line(self.screen, RGB["CYANINE"], (startpos_x, CELL_HEIGHT * y + startpos_y),
                              (max_width, CELL_HEIGHT * y + startpos_y),
                              LINE_WIDTH)
-            for x in range(self.board_cols):
+            for x in range(self.board_cols + 1):
                 # Draw the y axis
                 pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x + startpos_x, startpos_y),
                                  (CELL_WIDTH * x + startpos_x, max_height),
                                  LINE_WIDTH)
+
+        # Draw the board out
+        for y in range(self.board_rows):
+            # # Draw the x axis
+            # pygame.draw.line(self.screen, RGB["CYANINE"], (startpos_x, CELL_HEIGHT * y + startpos_y),
+            #                  (max_width, CELL_HEIGHT * y + startpos_y),
+            #                  LINE_WIDTH)
+            for x in range(self.board_cols):
+                # # Draw the y axis
+                # pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x + startpos_x, startpos_y),
+                #                  (CELL_WIDTH * x + startpos_x, max_height),
+                #                  LINE_WIDTH)
                 point = board[y][x]
                 if point.is_opened:
                     # Load the image of mine to the screen
@@ -253,7 +266,6 @@ class PygameView(View):
         This function is used to return the x, y coordinate of the updated point on the board
         Args:
             pos(int, int): event's pos
-            board(matrix of PointData): the output board
         Returns:
             coordinates(int, int): the x, y value of the point on the board
         """
@@ -266,18 +278,14 @@ class PygameView(View):
         startpos_x = (self.screen_width - max_width) // 2
         startpos_y = (self.screen_height - max_height) // 2
 
-        # print(self.board_rows)
-        # print(self.board_cols)
-        print(pos)
         x, y = pos
         for r in range(self.board_rows):
             for c in range(self.board_cols):
-                bx = x * CELL_WIDTH + startpos_x
-                by = y * CELL_HEIGHT + startpos_y
+                bx = c * CELL_WIDTH + startpos_x
+                by = r * CELL_HEIGHT + startpos_y
                 bw = CELL_WIDTH - 1 * ratio
                 bh = CELL_HEIGHT - 1 * ratio
                 if bx <= x <= bx + bw and by <= y <= by + bh:
-                    print(r,c)
                     return c, r
                 else:
                     pass
@@ -292,21 +300,18 @@ class PygameView(View):
 
         while True:
             self.event = pygame.event.wait()
-            # print(pygame.event.event_name(self.event.type), end=" ")
-            # print(pygame.event.)
             if self.event.type == pygame.QUIT:
                 raise SystemExit
             # elif event.type == pygame.VIDEORESIZE:
             elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 1:
                 user_move["flag"] = False
-                user_move["x"] = self._get_board_coordinates(self.event.pos)[0]
-                user_move["y"] = self._get_board_coordinates(self.event.pos)[1]
+                user_move["x"], user_move["y"] = self._get_board_coordinates(self.event.pos)
                 return user_move
             elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 3:
                 user_move["flag"] = True
-                user_move["x"] = self._get_board_coordinates(self.event.pos)[0]
-                user_move["y"] = self._get_board_coordinates(self.event.pos)[1]
+                user_move["x"], user_move["y"] = self._get_board_coordinates(self.event.pos)
                 return user_move
+
 
 # To be added
 #
@@ -326,10 +331,19 @@ class PygameView(View):
 
 # # The section below is for test purposes
 
+def check_stop():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            raise SystemExit
+
+
 def test():
     from src.Board import Board
     view = PygameView(600, 600)
     view.run(Board().get_board())
+
+    while True:
+        check_stop()
 
 
 if __name__ == '__main__':
