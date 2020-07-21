@@ -61,15 +61,18 @@ class View(ABC):
         """
         pass
 
-    def run(self, board):
+    def run(self, board, ai=None):
         """
         To run the view, showing the board and get an input from the player.
         Args:
             board (matrix of PointData): The processed board with key info hidden
+            ai (AI): The AI object.
         Returns:
             result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
         self.draw(board)
+        if ai:
+            return ai.make_decision(board)
         return self.input()
 
 

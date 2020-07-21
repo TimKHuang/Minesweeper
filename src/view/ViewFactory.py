@@ -8,7 +8,7 @@
 @description: The Factory to produce a particular View instance.
 """
 from src.view.TerminalView.TerminalView import TerminalView
-from src.view.PygameView.PygameView import PygameView
+# from src.view.PygameView.PygameView import PygameView
 
 
 class ViewFactory:
@@ -24,6 +24,6 @@ class ViewFactory:
         """
         if mode == "terminal":
             return TerminalView()
-        if mode == "pygame":
-            return PygameView()
+        # if mode == "pygame":
+        #     return PygameView()
         raise Exception("Mode does not exists.")
