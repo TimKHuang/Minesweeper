@@ -176,7 +176,6 @@ class PygameView(View):
                             tx = bx + bw / 2 - tw / 2
                             ty = by + bh / 2 - th / 2
                             self.screen.blit(number, (tx, ty))
-                            pygame.display.update()
                             continue
 
                 if point.is_flagged:
