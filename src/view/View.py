@@ -30,7 +30,7 @@ class View(ABC):
         """
         Get the the next step of the player.
         Returns:
-            input (tuple of int): The coordinate of the user input.
+           result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
         pass
     

@@ -7,6 +7,8 @@
 @time: 09/07/2020 10:28
 @description: This can be seen as a launcher of the game or controller.
 """
+import sys
+
 from src.Board import Board
 from src.view.ViewFactory import ViewFactory
 
@@ -45,6 +47,12 @@ class Minesweeper:
         while self.one_turn():
             pass
 
+    @staticmethod
+    def display_help_menu():
+        # TODO add helper menu
+        pass
+
 
 if __name__ == '__main__':
     Minesweeper().run()
+    arguments = sys.argv[1:]
