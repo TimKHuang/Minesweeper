@@ -8,7 +8,6 @@
 @description: This file creates button for UI
 """
 import pygame
-import os
 
 from src.view.assets.datas.constants import RGB, GAME_LEVEL, INTERMEDIATE_BOARD, BEGINNER_BOARD
 
@@ -65,7 +64,7 @@ class Button:
         This function is used to detect if a mousebutton is up
         And update the display when it is up
         Args:
-            pos(Tuple of 2): this determines the x, y coordinates of the event
+            pos(int, int): user's event's position
             screen(String): this determines where the updates would happen
 
         Returns:
@@ -74,7 +73,6 @@ class Button:
         if self.within_bound(pos):
             self.draw_button(screen)
             pygame.display.update()
-            return self.message
 
     def within_bound(self, pos):
         """
@@ -102,10 +100,10 @@ class Button:
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.is_down(event.pos, screen)
         elif event.type == pygame.MOUSEBUTTONUP:
-            return self.get_board_size(self.is_up(event.pos, screen))
+            self.is_up(event.pos, screen)
+            return True
 
-    @staticmethod
-    def get_board_size(message):
+    def get_board_size(self):
         """
         This function is used to ask user to choose the board's size
         # Args:
@@ -114,25 +112,17 @@ class Button:
         Returns:
             board_size(dictionary): This contains the dimension of the board
         """
-        if message == GAME_LEVEL["B"]:
+        if self.message == GAME_LEVEL["B"]:
             return BEGINNER_BOARD
-        if message == GAME_LEVEL["I"]:
-            print(INTERMEDIATE_BOARD)
+        elif self.message == GAME_LEVEL["I"]:
             return INTERMEDIATE_BOARD
-        else:
-            pass
+        elif self.message == GAME_LEVEL["C"]:
+            return None
 
-    def get_choice(self, event, screen):
+    def get_choice(self):
         """
         This function is used to get if user wants to restart the game or quit the game
-        Args:
-            event(Event): user's event
-            screen(String): the screen to display changes
         Returns:
             True if continue. False otherwise.
         """
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            self.is_down(event.pos, screen)
-        if event.type == pygame.MOUSEBUTTONUP:
-            message = self.is_up(event.pos, screen)
-            return message == "RESTART"
+        return self.message == "RESTART"
