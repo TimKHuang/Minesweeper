@@ -13,6 +13,7 @@ import time
 from src.view.assets.datas.constants import RGB
 from src.view.PygameView.Button import Button
 from src.view.View import View
+from src.view.PygameView.TextBox import TextBox
 
 
 class PygameView(View):
@@ -28,15 +29,13 @@ class PygameView(View):
             screen_width: default value for screen width is 400
             screen_height: default value for screen height is 600
         """
+        super().__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.board_rows = None
         self.board_cols = None
         # Set up the screen
         self.screen = None
-        # self.screen = pygame.display.set_mode((screen_width, screen_height), flags=pygame.RESIZABLE)
-        # self.screen.fill(RGB["WHITE"])
-        # pygame.display.set_caption("Minesweeper")
         # Generate the event
         self.event = None
         # Initialise pygame
@@ -90,20 +89,105 @@ class PygameView(View):
         # Get the game level
         while True:
             self.event = pygame.event.wait()
-            if beginner_button.update_button(self.event, self.screen):
-                pygame.display.update()
-                return beginner_button.update_button(self.event, self.screen)
 
-            elif intermediate_button.update_button(self.event, self.screen):
-                pygame.display.update()
-                return intermediate_button.update_button(self.event, self.screen)
+            if beginner_button.within_bound(pygame.mouse.get_pos()):
+                if beginner_button.update_button(self.event, self.screen):
+                    pygame.display.update()
+                    return beginner_button.get_board_size()
 
-            elif customise_button.update_button(self.event, self.screen):
-                pygame.display.update()
-                return customise_button.update_button(self.event, self.screen)
+            if intermediate_button.within_bound(pygame.mouse.get_pos()):
+                if intermediate_button.update_button(self.event, self.screen):
+                    pygame.display.update()
+                    return intermediate_button.get_board_size()
+
+            if customise_button.within_bound(pygame.mouse.get_pos()):
+                if customise_button.update_button(self.event, self.screen):
+                    pygame.display.update()
+                    print(pygame.event.event_name(self.event.type))
+                    return self._draw_text_box(MESSAGE_SIZE)
 
             elif self.event.type == pygame.QUIT:
                 raise SystemExit
+
+    def _draw_text_box(self, size):
+        """
+        This function is used to demand for user's input
+        And it draws the text boxes out
+        Args:
+            size(int): determines the size of the message
+        Returns:
+            board(dictionary): determines the dimension of the board
+        """
+        board = {}
+        self.screen.fill(RGB["WHITE"])
+        font = pygame.font.Font('view/assets/fonts/Trinity.ttf', size)
+
+        mine_text = font.render('Mine count ', True, RGB["HAZE"])
+        mine_tw, mine_th = mine_text.get_size()
+        mine_tx = (self.screen_width - mine_tw) // 6
+        mine_ty = (self.screen_height - mine_th) // 6
+        self.screen.blit(mine_text, (mine_tx, mine_ty))
+        mine_count_box = TextBox(
+            (mine_tx + mine_tw + 20, mine_ty - 10, self.screen_width - mine_tw - mine_tx - 40, mine_th * 2), size)
+        mine_count_box.draw(self.screen)
+        pygame.display.update()
+
+        width_text = font.render('Width ', True, RGB["HAZE"])
+        width_tw, width_th = width_text.get_size()
+        width_tx = mine_tx
+        width_ty = mine_ty + 100
+        self.screen.blit(width_text, (width_tx, width_ty))
+        width_box = TextBox(
+            (mine_tx + mine_tw + 20, width_ty - 10, self.screen_width - mine_tw - mine_tx - 40, width_th * 2),
+            size)
+        width_box.draw(self.screen)
+
+        height_text = font.render('Height ', True, RGB["HAZE"])
+        height_tw, height_th = height_text.get_size()
+        height_tx = mine_tx
+        height_ty = width_ty + 100
+        self.screen.blit(height_text, (height_tx, height_ty))
+        height_box = TextBox(
+            (mine_tx + mine_tw + 20, height_ty - 10, self.screen_width - mine_tw - mine_tx - 40, height_th * 2),
+            size)
+        height_box.draw(self.screen)
+
+        pygame.display.update()
+
+        # flags to detect the input
+        mine_flag = 0
+        width_flag = 0
+        height_flag = 0
+
+        while True:
+            for event in pygame.event.get():
+                if mine_count_box.within_bound(pygame.mouse.get_pos()):
+                    if event.type == pygame.KEYDOWN:
+                        self.event = event
+                        if mine_count_box.update(self.event):
+                            board["mine_count"] = int(mine_count_box.text)
+                            mine_flag = 1
+                if width_box.within_bound(pygame.mouse.get_pos()):
+                    if event.type == pygame.KEYDOWN:
+                        self.event = event
+                        if width_box.update(self.event):
+                            board["width"] = int(width_box.text)
+                            width_flag = 1
+                if height_box.within_bound(pygame.mouse.get_pos()):
+                    if event.type == pygame.KEYDOWN:
+                        self.event = event
+                        if height_box.update(self.event):
+                            board["height"] = int(height_box.text)
+                            height_flag = 1
+                if mine_flag == width_flag == height_flag == 1:
+                    return board
+                elif event.type == pygame.QUIT:
+                    raise SystemExit
+            pygame.time.delay(33)
+            mine_count_box.draw(self.screen)
+            width_box.draw(self.screen)
+            height_box.draw(self.screen)
+            pygame.display.update()
 
     def draw(self, board):
         """
@@ -117,7 +201,7 @@ class PygameView(View):
         CELL_WIDTH = 30
         CELL_HEIGHT = 30
         NUMBER_SIZE = 20
-        LINE_WIDTH = 1
+        LINE_WIDTH = 0
 
         # pygame.display.set_caption("Minesweeper:" + str(time.time())
 
@@ -138,12 +222,12 @@ class PygameView(View):
 
         for y in range(self.board_rows):
             # Draw the x axis
-            pygame.draw.line(self.screen, RGB["CYANINE"], (startpos_x, CELL_HEIGHT * y + startpos_y),
+            pygame.draw.line(self.screen, RGB["BLACK"], (startpos_x, CELL_HEIGHT * y + startpos_y),
                              (max_width, CELL_HEIGHT * y + startpos_y),
                              LINE_WIDTH)
         for x in range(self.board_cols):
             # Draw the y axis
-            pygame.draw.line(self.screen, RGB["CYANINE"], (CELL_WIDTH * x + startpos_x, startpos_y),
+            pygame.draw.line(self.screen, RGB["BLACK"], (CELL_WIDTH * x + startpos_x, startpos_y),
                              (CELL_WIDTH * x + startpos_x, max_height),
                              LINE_WIDTH)
 
@@ -197,6 +281,19 @@ class PygameView(View):
         # Update the screen after changing
         pygame.display.update()
 
+    def _centralise(self, text, dim):
+        """
+        This function is used to centralise the text on a given screen
+        Args:
+            text(String): message to be displayed
+            dim(Tuple): the dimension of the screen or
+        """
+        tw, th = text.get_size()
+        bx, by, bw, bh = dim
+        tx = bx + bw / 2 - tw / 2
+        ty = by + bh / 2 - th / 2
+        self.screen.blit(text, (tx, ty))
+
     def fail(self):
         """
         Deal with the situation when game fails
@@ -208,7 +305,7 @@ class PygameView(View):
         MESSAGE_SIZE = 20
 
         # Let the user to view the game
-        time.sleep(5)
+        time.sleep(3)
 
         # The dimension of this window is fixed:
         self.screen_width = 600
@@ -225,11 +322,7 @@ class PygameView(View):
         # Get the font
         font = pygame.font.Font('view/assets/fonts/Trinity.ttf', DEMAND_SIZE)
         text = font.render("You've met a bomb", True, RGB["WHITE"])
-        tw, th = text.get_size()
-        # Centralise the text
-        tx = bx + bw / 2 - tw / 2
-        ty = by + bh / 2 - th / 2
-        self.screen.blit(text, (tx, ty))
+        self._centralise(text, (bx, by, bw, bh))
 
         # Create two buttons
         restart_button = Button(
@@ -247,13 +340,16 @@ class PygameView(View):
         # Get user's choice
         while True:
             self.event = pygame.event.wait()
-            if self.event.type == pygame.MOUSEBUTTONUP:
-                if restart_button.is_up(self.event.pos, self.screen):
+            if restart_button.within_bound(pygame.mouse.get_pos()):
+                if restart_button.update_button(self.event, self.screen):
                     pygame.display.update()
-                    return restart_button.get_choice(self.event, self.screen)
-                if quit_button.is_up(self.event.pos, self.screen):
+                    return restart_button.get_choice()
+
+            if quit_button.within_bound(pygame.mouse.get_pos()):
+                if quit_button.update_button(self.event, self.screen):
                     pygame.display.update()
-                    return quit_button.get_choice(self.event, self.screen)
+                    return quit_button.get_choice()
+
             if self.event.type == pygame.QUIT:
                 raise SystemExit
 
@@ -266,9 +362,6 @@ class PygameView(View):
         # Dimension of the button
         DEMAND_SIZE = 30
         MESSAGE_SIZE = 20
-
-        # Let the user to view the game
-        time.sleep(5)
 
         # The dimension of this window is fixed:
         self.screen_width = 600
@@ -284,13 +377,9 @@ class PygameView(View):
         pygame.draw.rect(self.screen, RGB["PALE_GREEN"], (bx, by, bw, bh))
 
         # Get the font
-        font = pygame.font.Font('src/View/assets/fonts/Trinity.ttf', DEMAND_SIZE)
+        font = pygame.font.Font('view/assets/fonts/Trinity.ttf', DEMAND_SIZE)
         text = font.render("Wow! Excellent", True, RGB["WHITE"])
-        tw, th = text.get_size()
-        # Centralise the text
-        tx = bx + bw / 2 - tw / 2
-        ty = by + bh / 2 - th / 2
-        self.screen.blit(text, (tx, ty))
+        self._centralise(text, (bx, by, bw, bh))
 
         # Create two buttons
         restart_button = Button(
@@ -303,17 +392,21 @@ class PygameView(View):
             "QUIT", RGB["WHITE"], MESSAGE_SIZE)
         restart_button.draw_button(self.screen)
         quit_button.draw_button(self.screen)
+        pygame.display.update()
 
         # Get user's choice
         while True:
             self.event = pygame.event.wait()
-            if self.event.type == pygame.MOUSEBUTTONUP:
-                if restart_button.is_up(self.event.pos, self.screen):
+            if restart_button.within_bound(pygame.mouse.get_pos()):
+                if restart_button.update_button(self.event, self.screen):
                     pygame.display.update()
-                    return restart_button.get_choice(self.event, self.screen)
-                if quit_button.is_up(self.event.pos, self.screen):
+                    return restart_button.get_choice()
+
+            if quit_button.within_bound(pygame.mouse.get_pos()):
+                if quit_button.update_button(self.event, self.screen):
                     pygame.display.update()
-                    return quit_button.get_choice(self.event, self.screen)
+                    return quit_button.get_choice()
+
             if self.event.type == pygame.QUIT:
                 raise SystemExit
 
