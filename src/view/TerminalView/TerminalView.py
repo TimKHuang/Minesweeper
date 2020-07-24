@@ -33,6 +33,7 @@ class TerminalView(View):
         Args:
             board (matrix of PointData): The processed board with key info hidden
         """
+        print("Time used already: " + str(int(self.time_running())) + "seconds")
         self.rows = len(board)
         self.cols = len(board[0])
         # print the x-axis
@@ -110,6 +111,7 @@ class TerminalView(View):
         """
         print(COLOUR["*"] + "Sorry, you've met a bomb.")
         operation = self._input_check({"y", "n"}, "Restart the game? Please type y or n: \t")
+        self.reset_timer()
         return operation == "y"
 
     def win(self):
@@ -120,6 +122,7 @@ class TerminalView(View):
         """
         print(COLOUR["*"] + "Wow excellent!")
         operation = self._input_check({"y", "n"}, "Restart the game? Please type y or n: \t")
+        self.reset_timer()
         return operation == "y"
 
     def _input_check(self, checklist, message):

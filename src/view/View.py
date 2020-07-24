@@ -50,6 +50,7 @@ class View(ABC):
     def fail(self):
         """
         Deal with the situation when game fails.
+        The function should reset the time.
         Returns:
             continue (bool): True is restart. False otherwise.
         """
@@ -59,6 +60,7 @@ class View(ABC):
     def win(self):
         """
         Deal with the situation when game wins.
+        The function should reset the timer.
         Returns:
             continue (bool): True is restart. False otherwise.
         """
@@ -89,3 +91,9 @@ class View(ABC):
         if self.time is None:
             return 0
         return timeit.default_timer() - self.time
+
+    def reset_timer(self):
+        """
+        reset the time to zero.
+        """
+        self.time = None
