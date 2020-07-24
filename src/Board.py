@@ -56,6 +56,10 @@ class Board:
         for r in self.mines:
             y = r // self.height
             x = r % self.width
+            while y >= self.height:
+                y -= y
+            while x >= self.width:
+                x -= x
             self.search(x, y).set_bomb(True)
         for x in range(self.width):
             for y in range(self.height):
