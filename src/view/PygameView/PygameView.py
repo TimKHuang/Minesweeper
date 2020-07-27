@@ -49,6 +49,7 @@ class PygameView(View):
             game_level(dictionary): This determines the dimension of the board
         """
         # Dimension of button
+        board = {}
         BUTTON_WIDTH = 200
         BUTTON_HEIGHT = 50
         MESSAGE_SIZE = 20
@@ -59,6 +60,8 @@ class PygameView(View):
         self.screen_height = 600
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Minesweeper")
+        # icon = pygame.image.load('view/assets/images/icon.jpg').convert_alpha()
+        # pygame.display.set_icon(icon)
         # Each iteration needs to fill the screen white again
         self.screen.fill(RGB["WHITE"])
 
@@ -89,22 +92,27 @@ class PygameView(View):
         # Get the game level
         while True:
             self.event = pygame.event.wait()
-
             if beginner_button.within_bound(pygame.mouse.get_pos()):
                 if beginner_button.update_button(self.event, self.screen):
                     pygame.display.update()
-                    return beginner_button.get_board_size()
+                    board = beginner_button.get_board_size()
 
             if intermediate_button.within_bound(pygame.mouse.get_pos()):
                 if intermediate_button.update_button(self.event, self.screen):
                     pygame.display.update()
-                    return intermediate_button.get_board_size()
+                    board = intermediate_button.get_board_size()
 
             if customise_button.within_bound(pygame.mouse.get_pos()):
                 if customise_button.update_button(self.event, self.screen):
+                    self.screen.fill(RGB["WHITE"])
+                    beginner_button.set_alpha(self.screen, 10)
+                    intermediate_button.set_alpha(self.screen, 10)
+                    customise_button.set_alpha(self.screen, 10)
                     pygame.display.update()
-                    print(pygame.event.event_name(self.event.type))
-                    return self._draw_text_box(MESSAGE_SIZE)
+                    board = self._draw_text_box(MESSAGE_SIZE)
+
+            if len(board) == 3:
+                return board
 
             elif self.event.type == pygame.QUIT:
                 raise SystemExit
@@ -119,7 +127,6 @@ class PygameView(View):
             board(dictionary): determines the dimension of the board
         """
         board = {}
-        self.screen.fill(RGB["WHITE"])
         font = pygame.font.Font('view/assets/fonts/Trinity.ttf', size)
 
         mine_text = font.render('Mine count ', True, RGB["HAZE"])
@@ -128,9 +135,9 @@ class PygameView(View):
         mine_ty = (self.screen_height - mine_th) // 6
         self.screen.blit(mine_text, (mine_tx, mine_ty))
         mine_count_box = TextBox(
-            (mine_tx + mine_tw + 20, mine_ty - 10, self.screen_width - mine_tw - mine_tx - 40, mine_th * 2), size)
+            (mine_tx + mine_tw + 20, mine_ty - 10, self.screen_width - mine_tw - mine_tx - 40, mine_th * 2), size,
+            RGB["HAZE"])
         mine_count_box.draw(self.screen)
-        pygame.display.update()
 
         width_text = font.render('Width ', True, RGB["HAZE"])
         width_tw, width_th = width_text.get_size()
@@ -139,7 +146,7 @@ class PygameView(View):
         self.screen.blit(width_text, (width_tx, width_ty))
         width_box = TextBox(
             (mine_tx + mine_tw + 20, width_ty - 10, self.screen_width - mine_tw - mine_tx - 40, width_th * 2),
-            size)
+            size, RGB["HAZE"])
         width_box.draw(self.screen)
 
         height_text = font.render('Height ', True, RGB["HAZE"])
@@ -149,15 +156,10 @@ class PygameView(View):
         self.screen.blit(height_text, (height_tx, height_ty))
         height_box = TextBox(
             (mine_tx + mine_tw + 20, height_ty - 10, self.screen_width - mine_tw - mine_tx - 40, height_th * 2),
-            size)
+            size, RGB["HAZE"])
         height_box.draw(self.screen)
 
         pygame.display.update()
-
-        # flags to detect the input
-        mine_flag = 0
-        width_flag = 0
-        height_flag = 0
 
         while True:
             for event in pygame.event.get():
@@ -166,21 +168,23 @@ class PygameView(View):
                         self.event = event
                         if mine_count_box.update(self.event):
                             board["mine_count"] = int(mine_count_box.text)
-                            mine_flag = 1
+
                 if width_box.within_bound(pygame.mouse.get_pos()):
                     if event.type == pygame.KEYDOWN:
                         self.event = event
                         if width_box.update(self.event):
                             board["width"] = int(width_box.text)
-                            width_flag = 1
+
                 if height_box.within_bound(pygame.mouse.get_pos()):
                     if event.type == pygame.KEYDOWN:
                         self.event = event
                         if height_box.update(self.event):
                             board["height"] = int(height_box.text)
-                            height_flag = 1
-                if mine_flag == width_flag == height_flag == 1:
+
+                # When user gives enough input; return the board size
+                if len(board) == 3:
                     return board
+
                 elif event.type == pygame.QUIT:
                     raise SystemExit
             pygame.time.delay(33)
@@ -203,19 +207,16 @@ class PygameView(View):
         NUMBER_SIZE = 20
         LINE_WIDTH = 0
 
-        # pygame.display.set_caption("Minesweeper:" + str(time.time())
-
         # Set up the new screen
         self.board_rows = len(board)
         self.board_cols = len(board[0])
         max_width = (self.board_cols + 1) * CELL_WIDTH
         max_height = (self.board_rows + 1) * CELL_HEIGHT
-        self.screen_width = max_width + 200 * 2
-        self.screen_height = max_height + 200 * 2
+        self.screen_width = max_width + 100 * 2
+        self.screen_height = max_height + 100 * 2
         startpos_x = (self.screen_width - max_width) // 2
         startpos_y = (self.screen_height - max_height) // 2
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption("Minesweeper")
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
 
         # During each iteration the prev screen is filled white
         self.screen.fill(RGB["WHITE"])
@@ -298,7 +299,7 @@ class PygameView(View):
         """
         Deal with the situation when game fails
         Returns:
-            continune(boolean): True is start. False otherwise
+            continue(boolean): True is start. False otherwise
         """
         # Dimension of the button
         DEMAND_SIZE = 30
@@ -311,6 +312,7 @@ class PygameView(View):
         self.screen_width = 600
         self.screen_height = 600
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.reset_timer()
 
         # Each iteration needs to fill the window white
         self.screen.fill(RGB["WHITE"])
@@ -357,7 +359,7 @@ class PygameView(View):
         """
         Deal with the situation when game wins
         Returns:
-            continune(boolean): True is start. False otherwise
+            continue(boolean): True is start. False otherwise
         """
         # Dimension of the button
         DEMAND_SIZE = 30
@@ -367,6 +369,7 @@ class PygameView(View):
         self.screen_width = 600
         self.screen_height = 600
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.reset_timer()
 
         # Each iteration needs to fill the window white
         self.screen.fill(RGB["WHITE"])
@@ -438,6 +441,18 @@ class PygameView(View):
                 else:
                     pass
 
+    def _update_time(self):
+        """
+        This function is used to update the time
+        """
+        time_passed = "TIME: " + str(int(self.time_running())) + " SEC"
+        font = pygame.font.Font('view/assets/fonts/digital-7.ttf', 50)
+        text = font.render(time_passed, True, RGB["BLACK"])
+        time_rect = pygame.Surface(text.get_size())
+        time_rect.fill(RGB["WHITE"])
+        self.screen.blit(time_rect, (0, 0))
+        self.screen.blit(text, (0, 0))
+
     def input(self):
         """
         This function return user's move
@@ -447,23 +462,27 @@ class PygameView(View):
         user_move = {}
 
         while True:
-            self.event = pygame.event.wait()
-            if self.event.type == pygame.QUIT:
-                raise SystemExit
-            elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 1:
-                coordinates = self._get_board_coordinates(self.event.pos)
-                if coordinates is not None:
-                    user_move["flag"] = False
-                    user_move["x"] = coordinates[0]
-                    user_move["y"] = coordinates[1]
-                    return user_move
-            elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 3:
-                coordinates = self._get_board_coordinates(self.event.pos)
-                if coordinates is not None:
-                    user_move["flag"] = True
-                    user_move["x"] = coordinates[0]
-                    user_move["y"] = coordinates[1]
-                    return user_move
+            for event in pygame.event.get():
+                self.event = event
+                if self.event.type == pygame.QUIT:
+                    raise SystemExit
+                elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 1:
+                    coordinates = self._get_board_coordinates(self.event.pos)
+                    if coordinates is not None:
+                        user_move["flag"] = False
+                        user_move["x"] = coordinates[0]
+                        user_move["y"] = coordinates[1]
+                        return user_move
+                elif self.event.type == pygame.MOUSEBUTTONUP and self.event.button == 3:
+                    coordinates = self._get_board_coordinates(self.event.pos)
+                    if coordinates is not None:
+                        user_move["flag"] = True
+                        user_move["x"] = coordinates[0]
+                        user_move["y"] = coordinates[1]
+                        return user_move
+            # Update the time taken
+            self._update_time()
+            pygame.display.update()
 
 
 # The section below is for test purposes
