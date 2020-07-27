@@ -60,8 +60,8 @@ class PygameView(View):
         self.screen_height = 600
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Minesweeper")
-        # icon = pygame.image.load('view/assets/images/icon.jpg').convert_alpha()
-        # pygame.display.set_icon(icon)
+        icon = pygame.image.load('view/assets/images/icon.jpg').convert_alpha()
+        pygame.display.set_icon(icon)
         # Each iteration needs to fill the screen white again
         self.screen.fill(RGB["WHITE"])
 
