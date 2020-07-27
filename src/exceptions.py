@@ -16,3 +16,12 @@ class TooManyMineException:
 
     def __init__(self):
         super().__init__("Number of mines exceeds the board size")
+
+
+class NoModeException:
+    """
+    This is the exception called when trying to use a non existed mode
+    """
+
+    def __init__(self):
+        super().__init__("Mode does not exist")
