@@ -18,7 +18,7 @@ class TextBox:
     Boxes are used to get user's input
     """
 
-    def __init__(self, dim, message_size):
+    def __init__(self, dim, message_size, colour, callback=None):
         """
         This is the constructor for the textbox
         Args:
@@ -30,6 +30,8 @@ class TextBox:
         self.width, self.height = dim[2], dim[3]
         self.text = ""
         self.message_size = message_size
+        self.colour = colour
+        self.callback = callback
 
     def draw(self, screen):
         """
@@ -38,10 +40,10 @@ class TextBox:
             screen: the screen user wants to display the box
         """
         surface = pygame.Surface((self.width, self.height))
-        surface.fill(RGB["PALE_GREEN"])
+        surface.fill(self.colour)
         # Get the font
         font = pygame.font.Font('view/assets/fonts/Trinity.ttf', self.message_size)
-        text_surf = font.render(self.text, True, RGB["CYANINE"])
+        text_surf = font.render(self.text, True, RGB["WHITE"])
         screen.blit(surface, (self.x, self.y))
         screen.blit(text_surf, (self.x, self.y + (self.height - text_surf.get_height())),
                     (0, 0, self.width, self.height))
@@ -54,8 +56,8 @@ class TextBox:
         """
         if event.type == pygame.KEYDOWN:
 
-            unicode = event.unicode
-            key = event.key
+            unicode = getattr(event, "unicode")
+            key = getattr(event, "key")
 
             # DEL
             if key == 8:
@@ -68,6 +70,8 @@ class TextBox:
 
             # ENTER
             if key == 13:
+                if self.callback:
+                    self.callback(self.text)
                 return True
 
             if unicode != "":
