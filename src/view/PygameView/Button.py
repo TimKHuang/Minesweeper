@@ -126,3 +126,20 @@ class Button:
             True if continue. False otherwise.
         """
         return self.message == "RESTART"
+
+    def set_alpha(self, screen, alpha):
+        """
+        This function is used to make the button translucent
+        Returns:
+        """
+        # pygame.draw.rect(screen, self.bg_colour, self.dim)
+        rect = pygame.Surface([self.dim[2], self.dim[3]])
+        rect.set_alpha(alpha)
+        screen.blit(rect, (self.dim[0], self.dim[1]))
+        # Get the font
+        font = pygame.font.Font('view/assets/fonts/Trinity.ttf', self.message_size)
+        text = font.render(self.message, True, self.message_colour)
+        tw, th = text.get_size()
+        tx = self.dim[0] + self.dim[2] / 2 - tw / 2
+        ty = self.dim[1] + self.dim[3] / 2 - th / 2
+        screen.blit(text, (tx, ty))
