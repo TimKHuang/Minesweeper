@@ -16,15 +16,17 @@ class View(ABC):
     An Abstract class for all kinds of GUI.
     Provide a run() function to draw the GUI and get the user input.
     """
+
     def __init__(self):
         self.time = None
 
     @abstractmethod
-    def draw(self, board):
+    def draw(self, board, remaining):
         """
         Show the board. Provide a GUI.
         Args:
             board (matrix of PointData): The processed board with key info hidden
+            remaining (int): The number of remained mine on the board
         """
         pass
 
@@ -36,7 +38,7 @@ class View(ABC):
            result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
         pass
-    
+
     @abstractmethod
     def get_board_size(self):
         """
@@ -66,10 +68,11 @@ class View(ABC):
         """
         pass
 
-    def run(self, board, ai=None):
+    def run(self, board, remaining, ai=None):
         """
         To run the view, showing the board and get an input from the player.
         Args:
+            remaining (int): The number of remained mine on the board
             board (matrix of PointData): The processed board with key info hidden
             ai (AI): The AI object.
         Returns:
@@ -77,7 +80,7 @@ class View(ABC):
         """
         if self.time is None:
             self.time = timeit.default_timer()
-        self.draw(board)
+        self.draw(board, remaining)
         if ai:
             return ai.make_decision(board)
         return self.input()
