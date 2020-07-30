@@ -27,13 +27,15 @@ class TerminalView(View):
         self.rows = -1
         self.cols = -1
 
-    def draw(self, board):
+    def draw(self, board, remaining):
         """
         Show the board. Provide a GUI.
         Args:
+            remaining (int): The number of remained mine on the board
             board (matrix of PointData): The processed board with key info hidden
         """
         print("Time used already: " + str(int(self.time_running())) + "seconds")
+        print("Mine remained: " + str(remaining))
         self.rows = len(board)
         self.cols = len(board[0])
         # print the x-axis
