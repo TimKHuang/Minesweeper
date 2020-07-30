@@ -104,6 +104,20 @@ class Board:
         """
         return self.chessboard[y][x]
 
+    def remaining(self):
+        """
+        This function is used to get the number of remaining of mine on the board
+        Returns:
+            remaining(int): this indicates the number of remaining bomb on the board
+        """
+        flags = 0
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.search(x, y).point_data.is_flagged:
+                    flags += 1
+
+        return self.mine_count - flags
+
     def get_board(self):
         """
         This function is used to get a clone of the board
