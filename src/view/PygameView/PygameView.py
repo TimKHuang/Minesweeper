@@ -34,6 +34,8 @@ class PygameView(View):
         self.screen_height = screen_height
         self.board_rows = None
         self.board_cols = None
+        self.time_width = 0
+        self.time_height = 0
         # Set up the screen
         self.screen = None
         # Generate the event
@@ -241,19 +243,24 @@ class PygameView(View):
                              (CELL_WIDTH * x + startpos_x, max_height),
                              LINE_WIDTH)
 
-        font = pygame.font.Font('view/assets/fonts/digital-7.ttf', 40)
+        font = pygame.font.Font('view/assets/fonts/digital-7 (mono italic).ttf', 35)
         text = "Mine remained: " + str(remaining)
         remained_mine = font.render(text, True, RGB["PALE_PURPLE"])
         remained_mine_w, remained_mine_h = remained_mine.get_size()
-        self.screen.blit(remained_mine, (self.screen_width - remained_mine_w, 0))
+        self.screen.blit(remained_mine, (0, remained_mine_h))
 
         # Draw the board out
         for y in range(self.board_rows):
             for x in range(self.board_cols):
                 point = board[y][x]
+                bx = x * CELL_WIDTH + startpos_x
+                by = y * CELL_HEIGHT + startpos_y
+                bw = CELL_WIDTH - 2
+                bh = CELL_HEIGHT - 2
                 if point.is_opened:
                     # Load the image of mine to the screen
                     if point.is_bomb:
+                        pygame.draw.rect(self.screen, RGB["WHITE"], (bx, by, bw, bh), 1)
                         bomb = pygame.image.load('view/assets/images/mine.png')
                         bomb = pygame.transform.smoothscale(bomb, (CELL_WIDTH - 5, CELL_HEIGHT - 5))
                         self.screen.blit(bomb, (x * CELL_WIDTH + startpos_x, y * CELL_HEIGHT + startpos_y))
@@ -261,10 +268,6 @@ class PygameView(View):
 
                     else:
                         # Draw the point out
-                        bx = x * CELL_WIDTH + startpos_x
-                        by = y * CELL_HEIGHT + startpos_y
-                        bw = CELL_WIDTH - 2
-                        bh = CELL_HEIGHT - 2
                         pygame.draw.rect(self.screen, RGB["WHITE"], (bx, by, bw, bh), 1)
                         if point.bomb_around == 0:
                             continue
@@ -280,6 +283,7 @@ class PygameView(View):
 
                 if point.is_flagged:
                     # Load the image of flag to the screen
+                    pygame.draw.rect(self.screen, RGB["WHITE"], (bx, by, bw, bh), 1)
                     flag = pygame.image.load('view/assets/images/flag.png')
                     flag = pygame.transform.smoothscale(flag, (CELL_WIDTH - 5, CELL_HEIGHT - 5))
                     self.screen.blit(flag, (x * CELL_WIDTH + startpos_x, y * CELL_HEIGHT + startpos_y))
@@ -287,10 +291,6 @@ class PygameView(View):
 
                 else:
                     # Draw squares for unopened point on the board
-                    bx = x * CELL_WIDTH + startpos_x
-                    by = y * CELL_HEIGHT + startpos_y
-                    bw = CELL_WIDTH - 2
-                    bh = CELL_HEIGHT - 2
                     pygame.draw.rect(self.screen, RGB["SAKURA"], (bx, by, bw, bh))
                     continue
 
@@ -351,11 +351,11 @@ class PygameView(View):
         # Create two buttons
         restart_button = Button(
             (self.screen_width / 6, self.screen_height / 2, self.screen_width / 6, self.screen_height / 10),
-            RGB["PALE_PURPLE"],
+            RGB["VIOLET"],
             "RESTART", RGB["WHITE"], MESSAGE_SIZE)
         quit_button = Button(
             (self.screen_width * 2 / 3, self.screen_height / 2, self.screen_width / 6, self.screen_height / 10),
-            RGB["PALE_PURPLE"],
+            RGB["VIOLET"],
             "QUIT", RGB["WHITE"], MESSAGE_SIZE)
         restart_button.draw_button(self.screen)
         quit_button.draw_button(self.screen)
@@ -426,15 +426,19 @@ class PygameView(View):
         This function is used to update the time
         """
         time_passed = "TIME: " + str(int(self.time_running())) + " SEC"
-        font = pygame.font.Font('view/assets/fonts/digital-7.ttf', 40)
+        font = pygame.font.Font('view/assets/fonts/digital-7 (mono italic).ttf', 35)
         text = font.render(time_passed, True, RGB["PALE_PURPLE"])
         self.screen.blit(text, (0, 0))
+        self.time_width, self.time_height = text.get_size()
 
     def _reload_screen(self):
         """
         This function is used to reload the screen
         """
-        snapshot = pygame.image.load('view/assets/images/bg-yourname_snap.jpg')
+        bg = pygame.image.load('view/assets/images/bg-yourname.jpg').convert_alpha()
+        bg = pygame.transform.smoothscale(bg, (self.screen_width, self.screen_height))
+        select_area = pygame.Rect(0, 0, self.time_width, self.time_height)
+        snapshot = bg.subsurface(select_area).copy()
         self.screen.blit(snapshot, (0, 0))
 
     def input(self):
@@ -463,6 +467,7 @@ class PygameView(View):
                         user_move["x"] = coordinates[0]
                         user_move["y"] = coordinates[1]
                         return user_move
+                # elif self.event.type == pygame.
             # Update the time taken
             self._reload_screen()
             self._update_time()
@@ -480,8 +485,7 @@ def check_stop():
 def test():
     from src.Board import Board
     view = PygameView(800, 800)
-    view.run(Board().get_board())
-
+    view.run(Board().get_board(), Board().remaining())
     while True:
         check_stop()
 
