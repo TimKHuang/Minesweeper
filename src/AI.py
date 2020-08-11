@@ -27,8 +27,12 @@ class AI:
 
         # TODO Add you return statement here. Please make sure the return type is correct.
         if self.check_surround(board) is None:
+            print("random open")
+            print("---" * 10)
             return self.random_open(board)
         else:
+            print("ordinary open")
+            print("---" * 10)
             return self.check_surround(board)
 
     def random_open(self, board):
@@ -41,12 +45,16 @@ class AI:
         """
         rows = len(board)
         cols = len(board[0])
+        unopened_box = list([])
 
-        while True:
-            y = random.randint(0, rows - 1)
-            x = random.randint(0, cols - 1)
-            if not board[y][x].is_opened:
-                return {"flag": False, "x": x, "y": y}
+        # Add the current unopened boxes on the board to the list -- unopened
+        for x in range(cols):
+            for y in range(rows):
+                if not board[y][x].is_opened:
+                    unopened_box.append((x, y))
+
+        x, y = random.choice(unopened_box)
+        return {"flag": False, "x": x, "y": y}
 
     def divide_board(self):
         """
@@ -55,6 +63,7 @@ class AI:
 
         """
 
+    # This is implemented by using the ordinary algorithm
     def check_surround(self, board):
         """
         This function is used to check the unopened boxes around opened boxes
