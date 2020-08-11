@@ -72,7 +72,8 @@ class PygameView(View):
 
         # Set up beginner button
         beginner_button = Button(
-            (self.screen_width // 2 - BUTTON_WIDTH // 2, (self.screen_height - all_button_height) // 2 + 50, BUTTON_WIDTH,
+            (self.screen_width // 2 - BUTTON_WIDTH // 2, (self.screen_height - all_button_height) // 2 + 50,
+             BUTTON_WIDTH,
              BUTTON_HEIGHT),
             RGB["VIOLET"], "Beginner", RGB["WHITE"], MESSAGE_SIZE)
         beginner_button.draw_button(self.screen)
@@ -135,6 +136,11 @@ class PygameView(View):
             board(dictionary): determines the dimension of the board
         """
         board = {}
+        BUTTON_WIDTH = 200
+        BUTTON_HEIGHT = 50
+        MESSAGE_SIZE = 20
+        all_button_height = BUTTON_HEIGHT * 3 + 200
+
         font = pygame.font.Font('view/assets/fonts/Trinity.ttf', size)
         mine_text = font.render('Mine count ', True, RGB["VIOLET"])
         mine_tw, mine_th = mine_text.get_size()
@@ -166,6 +172,14 @@ class PygameView(View):
             size, RGB["VIOLET"])
         height_box.draw(self.screen)
 
+        # Create a submit button allows user to submit the dimension of the board
+        submit_button = Button(
+            (self.screen_width // 2 - BUTTON_WIDTH // 2, (self.screen_height - all_button_height) // 2 + 350,
+             BUTTON_WIDTH,
+             BUTTON_HEIGHT),
+            RGB["VIOLET"], "Submit", RGB["WHITE"], MESSAGE_SIZE)
+        submit_button.draw_button(self.screen)
+
         pygame.display.update()
 
         while True:
@@ -173,24 +187,26 @@ class PygameView(View):
                 if mine_count_box.within_bound(pygame.mouse.get_pos()):
                     if event.type == pygame.KEYDOWN:
                         self.event = event
-                        if mine_count_box.update(self.event):
-                            board["mine_count"] = int(mine_count_box.text)
+                        mine_count_box.update(self.event)
 
                 if width_box.within_bound(pygame.mouse.get_pos()):
                     if event.type == pygame.KEYDOWN:
                         self.event = event
-                        if width_box.update(self.event):
-                            board["width"] = int(width_box.text)
+                        width_box.update(self.event)
 
                 if height_box.within_bound(pygame.mouse.get_pos()):
                     if event.type == pygame.KEYDOWN:
                         self.event = event
-                        if height_box.update(self.event):
-                            board["height"] = int(height_box.text)
+                        height_box.update(self.event)
 
-                # When user gives enough input; return the board size
-                if len(board) == 3:
-                    return board
+                if submit_button.within_bound(pygame.mouse.get_pos()):
+                    self.event = event
+                    if submit_button.update_button(self.event, self.screen):
+                        pygame.display.update()
+                        board["mine_count"] = int(mine_count_box.text)
+                        board["width"] = int(width_box.text)
+                        board["height"] = int(height_box.text)
+                        return board
 
                 elif event.type == pygame.QUIT:
                     raise SystemExit
@@ -223,7 +239,7 @@ class PygameView(View):
         self.screen_height = max_height + 100 * 2
         startpos_x = (self.screen_width - max_width) // 2
         startpos_y = (self.screen_height - max_height) // 2
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
         # During each iteration the prev screen is refilled
         bg = pygame.image.load('view/assets/images/bg-yourname.jpg').convert_alpha()
@@ -467,7 +483,7 @@ class PygameView(View):
                         user_move["x"] = coordinates[0]
                         user_move["y"] = coordinates[1]
                         return user_move
-                # elif self.event.type == pygame.
+
             # Update the time taken
             self._reload_screen()
             self._update_time()
