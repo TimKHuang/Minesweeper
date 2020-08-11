@@ -26,6 +26,7 @@ class AI:
         """
 
         # TODO Add you return statement here. Please make sure the return type is correct.
+        
 
     def random_open(self, board):
         """
@@ -51,7 +52,7 @@ class AI:
 
         """
 
-    def check_unopen_surround(self, board):
+    def check_surround(self, board):
         """
         This function is used to check the unopened boxes around opened boxes
         Args:
@@ -66,15 +67,15 @@ class AI:
             for c in range(cols):
                 num = board[r][c].bomb_around
                 if board[r][c].is_opened and num != 0:
-                    res = self.unopen_surround((c, r), cols, rows)
+                    surr = self.unopen_surround((c, r), cols, rows)
                     unopen_surr = list([])
                     flag_surr = list([])
-                    for coordinates in res:
+                    for coordinates in surr:
                         point = board[coordinates[1]][coordinates[0]]
-                        # Add coordinates of hidden boxes in the unopen_surr
-                        if not point.is_opened:
+                        # Add coordinates of hidden boxes to the unopen_surr
+                        if not point.is_opened and not point.is_flagged:
                             unopen_surr.append(coordinates)
-                        # Add coordinates of flagged boxes in the flag_surr
+                        # Add coordinates of flagged boxes to the flag_surr
                         if point.is_flagged:
                             flag_surr.append(coordinates)
                     # when the number of unopened boxes equals to the number on the opened box
@@ -84,11 +85,16 @@ class AI:
                         x = unopen_surr[0][0]
                         y = unopen_surr[0][1]
                         return {"flag": True, "x": x, "y": y}
-                    # when the number 
-                    
+                    # when the number of flagged boxes equals to the number of the box
+                    if num == len(flag_surr):
+                        # Confirmed that all unopen boxes are safe
+                        # Open those boxes
+                        x = flag_surr[0][0]
+                        y = flag_surr[0][0]
+                        return {"flag": False, "x": x, "y": y}
 
-
-    def unopen_surround(self, p, width, height):
+    @staticmethod
+    def unopen_surround(p, width, height):
         """
         This function is used to visit boxes around p
         It would return a set of unopened boxes' coordinates
