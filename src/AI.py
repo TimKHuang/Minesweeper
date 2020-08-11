@@ -90,13 +90,6 @@ class AI:
                         # Add coordinates of flagged boxes to the flag_surr
                         if point.is_flagged:
                             flag_surr.append(coordinates)
-                    # when the number of unopened boxes equals to the number on the opened box
-                    if num == len(unopen_surr):
-                        # Confirmed that all unopened boxes are mines
-                        # Flag those boxes
-                        x = unopen_surr[0][0]
-                        y = unopen_surr[0][1]
-                        return {"flag": True, "x": x, "y": y}
                     # when the number of flagged boxes equals to the number of the box
                     if num == len(flag_surr):
                         # Confirmed that all unopen boxes are safe
@@ -104,6 +97,13 @@ class AI:
                         x = flag_surr[0][0]
                         y = flag_surr[0][0]
                         return {"flag": False, "x": x, "y": y}
+                    # when the number of unopened boxes equals to the number on the opened box
+                    if num == len(unopen_surr):
+                        # Confirmed that all unopened boxes are mines
+                        # Flag those boxes
+                        x = unopen_surr[0][0]
+                        y = unopen_surr[0][1]
+                        return {"flag": True, "x": x, "y": y}
 
     @staticmethod
     def unopen_surround(p, width, height):
@@ -136,14 +136,13 @@ class AI:
                 res.add((p[0], p[1] - 1))
         return res
 
-
 # Section below is for test use
 
 
 def test():
     from src.Board import Board
     user = AI()
-    board = Board(1, 4)
+    board = Board(4, 4)
     for row in board.chessboard:
         for val in row:
             if val.point_data.is_bomb:
@@ -151,13 +150,13 @@ def test():
             print(val.point_data.bomb_around, end=' ')
         print()
     board.update(0, 0)
-    board.update(1, 1)
-    board.update(1, 0)
+    # board.update(1, 1)
+    # board.update(1, 0)
     for row in board.chessboard:
         for val in row:
             print(val)
 
-    print(user.random_open(board.get_board()))
+    print(user.make_decision(board.get_board()))
 
 
 if __name__ == '__main__':
