@@ -40,6 +40,10 @@ class Minesweeper:
         # initiate the ai
         if use_ai:
             ai = AI()
+        else:
+            use_ai = self.view.get_ai_option()
+            if use_ai:
+                ai = AI()
 
         while not board.is_game_finish():
             if use_ai:

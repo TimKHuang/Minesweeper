@@ -49,6 +49,14 @@ class View(ABC):
         pass
 
     @abstractmethod
+    def get_ai_option(self):
+        """
+        Tells if the programme will run using ai script.
+        Returns:
+            ai (bool): True if uses ai
+        """
+
+    @abstractmethod
     def fail(self):
         """
         Deal with the situation when game fails.
