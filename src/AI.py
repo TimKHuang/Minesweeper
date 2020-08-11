@@ -26,7 +26,10 @@ class AI:
         """
 
         # TODO Add you return statement here. Please make sure the return type is correct.
-        
+        if self.check_surround(board) is None:
+            return self.random_open(board)
+        else:
+            return self.check_surround(board)
 
     def random_open(self, board):
         """
