@@ -73,13 +73,11 @@ class TextBox:
                 if self.callback:
                     self.callback(self.text)
                 return True
-
-            if unicode != "":
-                char = unicode
-            else:
+            
+            # Can only type in numbers
+            if 48 <= key <= 57:
                 char = chr(key)
-
-            self.text += char
+                self.text += char
 
     def within_bound(self, pos):
         """
