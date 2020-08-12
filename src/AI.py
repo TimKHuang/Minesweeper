@@ -29,11 +29,15 @@ class AI:
         if self.check_surround(board) is None:
             print("random open")
             print("---" * 10)
-            return self.random_open(board)
+            random_open = self.random_open(board)
+            print(random_open)
+            return random_open
         else:
             print("ordinary open")
             print("---" * 10)
-            return self.check_surround(board)
+            ordinary_open = self.check_surround(board)
+            print(ordinary_open)
+            return ordinary_open
 
     def random_open(self, board):
         """
@@ -58,7 +62,7 @@ class AI:
 
     def divide_board(self):
         """
-        This function is used to divide the board into different blocks
+        This function is used to divide the board into smaller boards
         Returns:
 
         """
@@ -77,8 +81,8 @@ class AI:
 
         for r in range(rows):
             for c in range(cols):
-                num = board[r][c].bomb_around
-                if board[r][c].is_opened and num != 0:
+                point= board[r][c]
+                if point.is_opened and point.bomb_around != 0 and not point.is_flagged:
                     surr = self.unopen_surround((c, r), cols, rows)
                     unopen_surr = list([])
                     flag_surr = list([])
@@ -91,14 +95,14 @@ class AI:
                         if point.is_flagged:
                             flag_surr.append(coordinates)
                     # when the number of flagged boxes equals to the number of the box
-                    if num == len(flag_surr):
+                    if point.bomb_around == len(flag_surr) and point.bomb_around != 0:
                         # Confirmed that all unopen boxes are safe
                         # Open those boxes
                         x = flag_surr[0][0]
-                        y = flag_surr[0][0]
+                        y = flag_surr[0][1]
                         return {"flag": False, "x": x, "y": y}
                     # when the number of unopened boxes equals to the number on the opened box
-                    if num == len(unopen_surr):
+                    if point.bomb_around == len(unopen_surr) and point.bomb_around != 0:
                         # Confirmed that all unopened boxes are mines
                         # Flag those boxes
                         x = unopen_surr[0][0]
@@ -156,6 +160,8 @@ def test():
         for val in row:
             print(val)
 
+    print(user.make_decision(board.get_board()))
+    print(user.make_decision(board.get_board()))
     print(user.make_decision(board.get_board()))
 
 
