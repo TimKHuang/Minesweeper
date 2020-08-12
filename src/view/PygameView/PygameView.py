@@ -118,7 +118,7 @@ class PygameView(View):
                     intermediate_button.set_alpha(self.screen, 50)
                     customise_button.set_alpha(self.screen, 50)
                     pygame.display.update()
-                    board = self._draw_text_box(MESSAGE_SIZE)
+                    board = self._draw_text_box()
 
             if len(board) == 3:
                 return board
@@ -126,12 +126,10 @@ class PygameView(View):
             elif self.event.type == pygame.QUIT:
                 raise SystemExit
 
-    def _draw_text_box(self, size):
+    def _draw_text_box(self):
         """
         This function is used to demand for user's input
         And it draws the text boxes out
-        Args:
-            size(int): determines the size of the message
         Returns:
             board(dictionary): determines the dimension of the board
         """
@@ -141,14 +139,14 @@ class PygameView(View):
         MESSAGE_SIZE = 20
         all_button_height = BUTTON_HEIGHT * 3 + 200
 
-        font = pygame.font.Font('view/assets/fonts/Trinity.ttf', size)
+        font = pygame.font.Font('view/assets/fonts/Trinity.ttf', MESSAGE_SIZE)
         mine_text = font.render('Mine count ', True, RGB["VIOLET"])
         mine_tw, mine_th = mine_text.get_size()
         mine_tx = (self.screen_width - mine_tw) // 6
         mine_ty = (self.screen_height - mine_th) // 6
         self.screen.blit(mine_text, (mine_tx, mine_ty + 50))
         mine_count_box = TextBox(
-            (mine_tx + mine_tw + 20, mine_ty + 40, self.screen_width - mine_tw - mine_tx - 40, mine_th * 2), size,
+            (mine_tx + mine_tw + 20, mine_ty + 40, self.screen_width - mine_tw - mine_tx - 40, mine_th * 2), MESSAGE_SIZE,
             RGB["VIOLET"])
         mine_count_box.draw(self.screen)
 
@@ -159,7 +157,7 @@ class PygameView(View):
         self.screen.blit(width_text, (width_tx, width_ty + 50))
         width_box = TextBox(
             (mine_tx + mine_tw + 20, width_ty + 40, self.screen_width - mine_tw - mine_tx - 40, width_th * 2),
-            size, RGB["VIOLET"])
+            MESSAGE_SIZE, RGB["VIOLET"])
         width_box.draw(self.screen)
 
         height_text = font.render('Height ', True, RGB["VIOLET"])
@@ -169,7 +167,7 @@ class PygameView(View):
         self.screen.blit(height_text, (height_tx, height_ty + 50))
         height_box = TextBox(
             (mine_tx + mine_tw + 20, height_ty + 40, self.screen_width - mine_tw - mine_tx - 40, height_th * 2),
-            size, RGB["VIOLET"])
+            MESSAGE_SIZE, RGB["VIOLET"])
         height_box.draw(self.screen)
 
         # Create a submit button allows user to submit the dimension of the board
@@ -216,6 +214,55 @@ class PygameView(View):
             width_box.draw(self.screen)
             height_box.draw(self.screen)
             pygame.display.update()
+
+    def get_ai_option(self):
+        """
+        This function is used to get if user wants ai to play the game or not
+        Returns:
+            True, if wants ai to play it
+            False, otherwise
+        """
+        MESSAGE_SIZE = 20
+
+        self.screen.fill(RGB["WHITE"])
+        bg = pygame.image.load('view/assets/images/ai.jpg').convert_alpha()
+        bg = pygame.transform.smoothscale(bg, (self.screen_width, self.screen_height))
+        self.screen.blit(bg, (0, 0))
+
+        font = pygame.font.Font('view/assets/fonts/Trinity.ttf', MESSAGE_SIZE)
+        text = font.render("Do you want AI to play for you?", True, RGB["WHITE"])
+        text_w, text_h = text.get_size()
+        text_x = (self.screen_width - text_w) // 3
+        text_y = (self.screen_height - text_h) // 3
+        self.screen.blit(text, (text_x, text_y))
+
+        # Create two buttons
+        yes_button = Button(
+            (self.screen_width / 6, self.screen_height / 2, self.screen_width / 6, self.screen_height / 10),
+            RGB["VIOLET"],
+            "YES", RGB["WHITE"], MESSAGE_SIZE)
+        no_button = Button(
+            (self.screen_width * 2 / 3, self.screen_height / 2, self.screen_width / 6, self.screen_height / 10),
+            RGB["VIOLET"],
+            "NO", RGB["WHITE"], MESSAGE_SIZE)
+        yes_button.draw_button(self.screen)
+        no_button.draw_button(self.screen)
+        pygame.display.update()
+
+        while True:
+            self.event = pygame.event.wait()
+            if yes_button.within_bound(pygame.mouse.get_pos()):
+                if yes_button.update_button(self.event, self.screen):
+                    pygame.display.update()
+                    return True
+
+            if no_button.within_bound(pygame.mouse.get_pos()):
+                if no_button.update_button(self.event, self.screen):
+                    pygame.display.update()
+                    return False
+
+            if self.event.type == pygame.QUIT:
+                raise SystemExit
 
     def draw(self, board, remaining):
         """
