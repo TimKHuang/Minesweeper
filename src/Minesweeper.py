@@ -16,7 +16,7 @@ from src.AI import AI
 
 class Minesweeper:
 
-    def __init__(self, mode="pygame"):
+    def __init__(self, mode="terminal"):
         """
         Initialise the game.
         Args:
@@ -47,7 +47,7 @@ class Minesweeper:
 
         while not board.is_game_finish():
             if use_ai:
-                operation = self.view.run(board.get_board(), ai=ai)
+                operation = self.view.run(board.get_board(), board.remaining(), ai=ai)
             else:
                 operation = self.view.run(board.get_board(), board.remaining())
             if not board.update(operation["x"], operation["y"], operation["flag"]):
