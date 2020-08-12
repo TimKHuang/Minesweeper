@@ -94,16 +94,28 @@ class TerminalView(View):
         if operation == 'n':
             return board
         # Get mine_count
-        mine_count = self._input_check(self._generate_string_collection(99), "Type the mine_count: \t")
+        mine_count = self._input_check(self._generate_string_collection(10000), "Type the mine_count: \t")
         board["mine_count"] = int(mine_count)
         # Get width
-        width = self._input_check(self._generate_string_collection(99), "Type the board's width: \t")
+        width = self._input_check(self._generate_string_collection(10000), "Type the board's width: \t")
         board["width"] = int(width)
         # Get height
-        height = self._input_check(self._generate_string_collection(99), "Type the board's height: \t")
+        height = self._input_check(self._generate_string_collection(10000), "Type the board's height: \t")
         board["height"] = int(height)
 
         return board
+
+    def get_ai_option(self):
+        """
+        This function is used to get if user wants the ai to play the game
+        Returns:
+            True, if user wants the ai
+            False, otherwise
+        """
+        operation = self._input_check({"y", "n"}, "AI to play the game? Please type y or n: \t")
+        if operation == 'y':
+            return True
+        return False
 
     def fail(self):
         """
