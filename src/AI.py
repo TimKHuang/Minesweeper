@@ -14,6 +14,7 @@ import random
 # If not specified, please do not change any of the code below.
 class AI:
 
+
     def make_decision(self, board):
         # TODO add the wiki page url
         """
@@ -52,8 +53,8 @@ class AI:
         unopened_box = list([])
 
         # Add the current unopened boxes on the board to the list -- unopened
-        for x in range(cols):
-            for y in range(rows):
+        for y in range(rows):
+            for x in range(cols):
                 if not board[y][x].is_opened:
                     unopened_box.append((x, y))
 
@@ -74,57 +75,62 @@ class AI:
         Args:
             board (matrix of PointData): The board with all the information.
         Returns:
-
+            result ({"flag": bool, "x": int, "y": int}): The coordinate of the user input.
         """
         rows = len(board)
         cols = len(board[0])
 
-        for r in range(rows):
-            for c in range(cols):
-                point= board[r][c]
-                if point.is_opened and point.bomb_around != 0 and not point.is_flagged:
-                    surr = self.unopen_surround((c, r), cols, rows)
+        for y in range(rows):
+            for x in range(cols):
+                point= board[y][x]
+                if point.is_opened and point.bomb_around != 0:
+                    surr = self.unopen_surround((x, y), board)
                     unopen_surr = list([])
                     flag_surr = list([])
                     for coordinates in surr:
-                        point = board[coordinates[1]][coordinates[0]]
+                        box = board[coordinates[1]][coordinates[0]]
                         # Add coordinates of hidden boxes to the unopen_surr
-                        if not point.is_opened and not point.is_flagged:
+                        if not box.is_opened and not box.is_flagged:
                             unopen_surr.append(coordinates)
                         # Add coordinates of flagged boxes to the flag_surr
-                        if point.is_flagged:
+                        if box.is_flagged and not box.is_opened:
                             flag_surr.append(coordinates)
                     # when the number of flagged boxes equals to the number of the box
                     if point.bomb_around == len(flag_surr) and point.bomb_around != 0:
                         # Confirmed that all unopen boxes are safe
                         # Open those boxes
-                        x = flag_surr[0][0]
-                        y = flag_surr[0][1]
-                        return {"flag": False, "x": x, "y": y}
+                        if len(unopen_surr) == 0:
+                            return None
+                        p_x = unopen_surr[0][0]
+                        p_y = unopen_surr[0][1]
+                        return {"flag": False, "x": p_x, "y": p_y}
                     # when the number of unopened boxes equals to the number on the opened box
-                    if point.bomb_around == len(unopen_surr) and point.bomb_around != 0:
+                    if point.bomb_around is None:
+                        continue
+                    if point.bomb_around - len(flag_surr) == len(unopen_surr):
                         # Confirmed that all unopened boxes are mines
                         # Flag those boxes
-                        x = unopen_surr[0][0]
-                        y = unopen_surr[0][1]
-                        return {"flag": True, "x": x, "y": y}
+                        p_x = unopen_surr[0][0]
+                        p_y = unopen_surr[0][1]
+                        return {"flag": True, "x": p_x, "y": p_y}
 
-    @staticmethod
-    def unopen_surround(p, width, height):
+    def unopen_surround(self,p, board):
         """
         This function is used to visit boxes around p
         It would return a set of unopened boxes' coordinates
         Args:
-            p (Point): The point being opened
-            width (int): The width of the board
-            height (int): The height of the board
+            p ((int, int): The point being opened
+            board (matrix of PointData): The board with all the information.
         Returns:
             res(set((int,int))): This is a set of coordinates of all nearby boxes
         """
+        rows = len(board)
+        cols = len(board[0])
+
         res = set([])
-        if p[0] + 1 < width:
+        if p[0] + 1 < cols:
             res.add((p[0] + 1, p[1]))
-            if p[1] + 1 < height:
+            if p[1] + 1 < rows:
                 res.add((p[0] + 1, p[1] + 1))
                 res.add((p[0], p[1] + 1))
             if p[1] - 1 >= 0:
@@ -132,7 +138,7 @@ class AI:
                 res.add((p[0], p[1] - 1))
         if p[0] - 1 >= 0:
             res.add((p[0] - 1, p[1]))
-            if p[1] + 1 < height:
+            if p[1] + 1 < cols:
                 res.add((p[0] - 1, p[1] + 1))
                 res.add((p[0], p[1] + 1))
             if p[1] - 1 >= 0:
@@ -145,8 +151,8 @@ class AI:
 
 def test():
     from src.Board import Board
-    user = AI()
     board = Board(4, 4)
+    user = AI()
     for row in board.chessboard:
         for val in row:
             if val.point_data.is_bomb:
