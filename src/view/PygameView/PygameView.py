@@ -373,11 +373,12 @@ class PygameView(View):
         ty = by + bh / 2 - th / 2
         self.screen.blit(text, (tx, ty))
 
-    def _get_continue(self, message):
+    def _get_continue(self, message, win):
         """
         This function is used get if user wants to continue the game
         Args:
             message: The message to be displayed
+            win(boolean): this is a boolean value to determine if the game is finished
         Returns:
             continue (boolean): if user wants to continue the game
         """
@@ -391,7 +392,8 @@ class PygameView(View):
         MESSAGE_SIZE = 20
 
         # Let the user to view the game
-        time.sleep(3)
+        if not win:
+            time.sleep(3)
 
         # The dimension of this window is fixed:
         self.screen_width = 600
@@ -446,7 +448,7 @@ class PygameView(View):
         Returns:
             continue(boolean): True is start. False otherwise
         """
-        return self._get_continue("You've met a bomb")
+        return self._get_continue("You've met a bomb", win=False)
 
     def win(self):
         """
@@ -454,7 +456,7 @@ class PygameView(View):
         Returns:
             continue(boolean): True is start. False otherwise
         """
-        return self._get_continue("Wow! Excellent!")
+        return self._get_continue("Wow! Excellent!", win=True)
 
     def _get_board_coordinates(self, pos):
         """
