@@ -65,6 +65,8 @@ class Point:
         """
         if self.point_data.is_opened:
             return False
+        if self.point_data.is_flagged:
+            return self.point_data.bomb_around == 0
         self.point_data.is_opened = True
         self.point_data.is_flagged = None
         return self.point_data.bomb_around == 0
