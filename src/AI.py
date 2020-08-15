@@ -14,7 +14,6 @@ import random
 # If not specified, please do not change any of the code below.
 class AI:
 
-
     def make_decision(self, board):
         # TODO add the wiki page url
         """
@@ -82,7 +81,7 @@ class AI:
 
         for y in range(rows):
             for x in range(cols):
-                point= board[y][x]
+                point = board[y][x]
                 if point.is_opened and point.bomb_around != 0:
                     surr = self.unopen_surround((x, y), board)
                     unopen_surr = list([])
@@ -100,7 +99,7 @@ class AI:
                         # Confirmed that all unopen boxes are safe
                         # Open those boxes
                         if len(unopen_surr) == 0:
-                            return None
+                            continue
                         p_x = unopen_surr[0][0]
                         p_y = unopen_surr[0][1]
                         return {"flag": False, "x": p_x, "y": p_y}
@@ -114,7 +113,7 @@ class AI:
                         p_y = unopen_surr[0][1]
                         return {"flag": True, "x": p_x, "y": p_y}
 
-    def unopen_surround(self,p, board):
+    def unopen_surround(self, p, board):
         """
         This function is used to visit boxes around p
         It would return a set of unopened boxes' coordinates
@@ -145,6 +144,7 @@ class AI:
                 res.add((p[0] - 1, p[1] - 1))
                 res.add((p[0], p[1] - 1))
         return res
+
 
 # Section below is for test use
 
