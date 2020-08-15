@@ -491,20 +491,21 @@ class PygameView(View):
         This function is used to update the time
         """
         time_passed = "TIME: " + str(int(self.time_running())) + " SEC"
-        font = pygame.font.Font('view/assets/fonts/digital-7 (mono italic).ttf', 35)
-        text = font.render(time_passed, True, RGB["PALE_PURPLE"])
-        self.screen.blit(text, (0, 0))
-        self.time_width, self.time_height = text.get_size()
+        # font = pygame.font.Font('view/assets/fonts/digital-7 (mono italic).ttf', 35)
+        # text = font.render(time_passed, True, RGB["PALE_PURPLE"])
+        # self.screen.blit(text, (0, 0))
+        # self.time_width, self.time_height = text.get_size()
+        pygame.display.set_caption(time_passed)
 
-    def _reload_screen(self):
-        """
-        This function is used to reload the screen
-        """
-        bg = pygame.image.load('view/assets/images/bg-yourname.jpg').convert_alpha()
-        bg = pygame.transform.smoothscale(bg, (self.screen_width, self.screen_height))
-        select_area = pygame.Rect(0, 0, self.time_width, self.time_height)
-        snapshot = bg.subsurface(select_area).copy()
-        self.screen.blit(snapshot, (0, 0))
+    # def _reload_screen(self):
+    #     """
+    #     This function is used to reload the screen
+    #     """
+    #     bg = pygame.image.load('view/assets/images/bg-yourname.jpg').convert_alpha()
+    #     bg = pygame.transform.smoothscale(bg, (self.screen_width, self.screen_height))
+    #     select_area = pygame.Rect(0, 0, self.time_width, self.time_height)
+    #     snapshot = bg.subsurface(select_area).copy()
+    #     self.screen.blit(snapshot, (0, 0))
 
     def input(self):
         """
@@ -534,7 +535,7 @@ class PygameView(View):
                         return user_move
 
             # Update the time taken
-            self._reload_screen()
+            # self._reload_screen()
             self._update_time()
             pygame.display.update()
 
