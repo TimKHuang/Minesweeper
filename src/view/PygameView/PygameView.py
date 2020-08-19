@@ -324,7 +324,7 @@ class PygameView(View):
                     # Load the image of mine to the screen
                     if point.is_bomb:
                         pygame.draw.rect(self.screen, RGB["WHITE"], (bx, by, bw, bh), 1)
-                        bomb = pygame.image.load('view/assets/images/mine.png')
+                        bomb = pygame.image.load('view/assets/images/mine.jpg')
                         bomb = pygame.transform.smoothscale(bomb, (CELL_WIDTH - 5, CELL_HEIGHT - 5))
                         self.screen.blit(bomb, (x * CELL_WIDTH + startpos_x, y * CELL_HEIGHT + startpos_y))
                         continue
